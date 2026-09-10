@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vinay V</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --text: #1d1d1f;
+      --muted: #6e6e73;
+      --space: #86868b;
+      --border: rgba(255,255,255,0.25);
+      --bg: #ffffff;
+      --blue: #0071e3;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Google Sans", system-ui, -apple-system;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    a:hover { text-decoration: underline; }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(18px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
+
+    .nav-inner {
+      max-width: 1200px;
+      margin: auto;
+      padding: 14px 24px;
+    }
+
+    .brand {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--space);
+    }
+
+    /* HERO */
+section {
+  height: 100vh;
+  padding: 120px 24px 0;
+  display: flex;
+  align-items: center;
+}
+
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      width: 100%;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 72px;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 6vw, 4.6rem);
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      margin-bottom: 18px;
+    }
+
+    .space-gray {
+      color: var(--space);
+      font-weight: 600;
+    }
+
+    .subtitle {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 520px;
+      margin-bottom: 26px;
+    }
+
+    .subtitle span {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* GLASS */
+    .glass {
+      margin-bottom: 24px;
+      padding: 20px 24px;
+      border-radius: 18px;
+      background: linear-gradient(
+        135deg,
+        rgba(255,255,255,0.75),
+        rgba(255,255,255,0.35)
+      );
+      backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid var(--border);
+      box-shadow:
+        0 18px 36px rgba(0,0,0,0.06),
+        inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .glass p {
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    /* LINKS */
+    .links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap;
+      font-size: 15px;
+    }
+
+    /* IMAGE */
+.hero-image {
+  position: relative;
+  height: 540px;
+  overflow: hidden;
+
+  -webkit-mask-image:
+    radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,1) 55%,
+      rgba(0,0,0,0.8) 70%,
+      rgba(0,0,0,0) 92%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,1) 65%,
+      rgba(0,0,0,0) 100%
+    );
+
+  -webkit-mask-composite: source-in;
+  mask-composite: intersect;
+}
+
+.hero-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+
+
+
+
+    /* MOBILE */
+    @media (max-width: 900px) {
+      section {
+        padding-top: 120px;
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 42px;
+      }
+
+      h1 {
+        font-size: 2.7rem;
+      }
+
+      .hero-image img {
+        height: 420px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <div class="nav-inner">
+      <div class="brand">Vinay</div>
+    </div>
+  </nav>
+
+  <section>
+    <div class="container">
+      <div class="hero-grid">
+
+        <!-- LEFT -->
+        <div>
+          <h1>
+            Software<br>
+            <span class="space-gray">Engineer</span>
+          </h1>
+
+       <p class="subtitle">    Exploring the ideas that shape intelligence, from abstraction to emergence.</p>
+
+        <div class="glass">
+  <p>Java · Spring Boot · Python · FastAPI · Deep Learning · Generative AI</p>
+</div>
+
+          <div class="links">
+            <a href="mailto:Vinaycharyvelpula@gmail.com">Email</a>
+            <a href="https://github.com/vinaix" target="_blank">GitHub</a>
+            <a href="https://www.linkedin.com/in/vinaix" target="_blank">LinkedIn</a>
+            <a href="https://x.com/" target="_blank">X</a>
+          </div>
+        </div>
+
+        <!-- RIGHT -->
+        <div class="hero-image">
+          <img src="me.png" alt="Vinay">
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+</body>
+</html>
