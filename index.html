@@ -4,675 +4,74 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Vinay V — Software Engineer</title>
-
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
 <style>
-  :root{
-    /* ONE palette — used everywhere */
-    --bg:#eef1f5;                 /* light grey-blue base */
-    --ink:#0a0a0a;                /* near-black text */
-    --ink-2:#1c1c1e;
-    --muted:#5f6672;
-    --dim:#8a8f99;
-    --line:rgba(10,10,10,.08);
-    --line-2:rgba(10,10,10,.14);
-    --blue:#2563eb;
-    --blue-soft:rgba(37,99,235,.10);
-
-    /* Liquid glass — real transparency */
-    --glass-bg:rgba(255,255,255,.10);
-    --glass-bg-strong:rgba(255,255,255,.16);
-    --glass-border:rgba(255,255,255,.55);
-    --glass-border-dim:rgba(255,255,255,.30);
-    --glass-blur:22px;
-    --glass-shadow:
-      0 1px 0 rgba(255,255,255,.65) inset,
-      0 -1px 0 rgba(0,0,0,.06) inset,
-      0 12px 40px -16px rgba(10,20,40,.20);
-
-    /* Apple-style type stack */
-    --font:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
-    --mono:ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
-
-    --ease:cubic-bezier(.4,0,.2,1);
-    --ease-out:cubic-bezier(0,0,.2,1);
-  }
-
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
-  body{
-    font-family:var(--font);
-    background:var(--bg);
-    color:var(--ink);
-    line-height:1.5;
-    letter-spacing:-.012em;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
-    font-feature-settings:"ss01","cv11","cv02";
-    position:relative;
-    min-height:100vh;
-    overflow-x:hidden;
-  }
-
-  /* ============================================================
-     AMBIENT BACKDROP — this is what the glass refracts
-     Soft moving colour field BEHIND everything.
-     ============================================================ */
-  .backdrop{
-    position:fixed;inset:0;z-index:0;overflow:hidden;
-    background:
-      radial-gradient(ellipse 80% 60% at 15% 20%, rgba(37,99,235,.22), transparent 60%),
-      radial-gradient(ellipse 70% 60% at 85% 15%, rgba(120,140,200,.20), transparent 60%),
-      radial-gradient(ellipse 80% 70% at 75% 85%, rgba(37,99,235,.14), transparent 60%),
-      radial-gradient(ellipse 60% 50% at 25% 90%, rgba(140,160,220,.16), transparent 60%),
-      linear-gradient(180deg,#eef1f5 0%,#e7ebf2 100%);
-  }
-  .backdrop::before{
-    content:"";position:absolute;inset:-10%;
-    background:
-      radial-gradient(circle 400px at 25% 35%, rgba(120,150,230,.35), transparent 70%),
-      radial-gradient(circle 500px at 75% 65%, rgba(90,120,200,.28), transparent 70%),
-      radial-gradient(circle 350px at 50% 15%, rgba(180,200,255,.30), transparent 70%),
-      radial-gradient(circle 450px at 60% 90%, rgba(60,90,180,.20), transparent 70%);
-    filter:blur(60px) saturate(140%);
-    animation:drift 40s ease-in-out infinite;
-    will-change:transform;
-  }
-  @keyframes drift{
-    0%,100%{transform:translate3d(0,0,0) scale(1)}
-    33%{transform:translate3d(2%,-3%,0) scale(1.06)}
-    66%{transform:translate3d(-3%,2%,0) scale(.96)}
-  }
-
-  /* Grain overlay — page-wide */
-  .grain{
-    position:fixed;inset:0;z-index:1;pointer-events:none;
-    opacity:.05;mix-blend-mode:multiply;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
-  }
-
-  /* All content sits above the backdrop + grain */
-  .shell{position:relative;z-index:2}
-
-  ::selection{background:var(--blue);color:#fff}
-  a{color:inherit;text-decoration:none}
-  img{display:block;max-width:100%}
-
-  /* ============================================================
-     LIQUID GLASS — the real recipe
-     ============================================================ */
-  .glass{
-    position:relative;
-    background:var(--glass-bg);
-    backdrop-filter:blur(var(--glass-blur)) saturate(180%);
-    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);
-    border:1px solid var(--glass-border-dim);
-    box-shadow:var(--glass-shadow);
-    border-radius:20px;
-    overflow:hidden;
-    isolation:isolate;
-  }
-  /* Specular top highlight — mimics light catching the top edge */
-  .glass::before{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 30%);
-    z-index:1;
-  }
-  /* Meniscus edge — refraction ring */
-  .glass::after{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    padding:1px;
-    background:linear-gradient(135deg,
-      rgba(255,255,255,.9) 0%,
-      rgba(255,255,255,.1) 25%,
-      transparent 50%,
-      rgba(255,255,255,.15) 75%,
-      rgba(255,255,255,.6) 100%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
-  }
-  .glass > *{position:relative;z-index:4}
-
-  /* ============================================================
-     NAV — glass pill
-     ============================================================ */
-  .nav{
-    position:fixed;top:16px;left:50%;transform:translateX(-50%);
-    z-index:100;
-    width:min(1160px, calc(100% - 32px));
-    border-radius:100px;
-    background:var(--glass-bg-strong);
-    backdrop-filter:blur(24px) saturate(180%);
-    -webkit-backdrop-filter:blur(24px) saturate(180%);
-    border:1px solid var(--glass-border-dim);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.7) inset,
-      0 -1px 0 rgba(0,0,0,.04) inset,
-      0 10px 32px -12px rgba(10,20,40,.18);
-  }
-  .nav::after{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.85),transparent 30%,rgba(255,255,255,.4));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-  }
-  .nav-inner{
-    padding:11px 12px 11px 22px;
-    display:flex;align-items:center;justify-content:space-between;
-    position:relative;z-index:2;
-  }
-  .brand{
-    font-size:15px;font-weight:600;letter-spacing:-.02em;
-    display:flex;align-items:baseline;gap:7px;
-  }
-  .brand sup{
-    font-family:var(--mono);font-size:9px;
-    color:var(--dim);letter-spacing:.06em;
-    position:relative;top:-5px;font-weight:500;
-  }
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
-  .nav-links a{transition:color .2s var(--ease)}
-  .nav-links a:hover{color:var(--ink)}
-  .nav-cta{
-    font-size:13px;font-weight:500;
-    padding:8px 16px;
-    background:var(--ink);color:#fff;
-    border-radius:100px;
-    transition:transform .2s var(--ease-out), background .2s var(--ease);
-  }
-  .nav-cta:hover{background:#222;transform:translateY(-1px)}
-  @media (max-width:760px){
-    .nav-links{display:none}
-    .nav-inner{padding:10px 10px 10px 18px}
-  }
-
-  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
-  @media (max-width:720px){ .wrap{padding:0 18px} }
-
-  /* ============================================================
-     HERO
-     ============================================================ */
-  .hero{padding:150px 0 100px}
-  .hero-grid{
-    display:grid;
-    grid-template-columns:1.15fr .85fr;
-    gap:72px;align-items:center;
-  }
-
-  .hero .meta{
-    font-family:var(--mono);font-size:11.5px;
-    color:var(--dim);letter-spacing:.05em;
-    display:flex;align-items:center;gap:14px;
-    margin-bottom:32px;flex-wrap:wrap;
-  }
-  .hero .meta .dot{
-    width:6px;height:6px;border-radius:50%;
-    background:var(--blue);
-    box-shadow:0 0 0 0 rgba(37,99,235,.5);
-    animation:pulseDot 2s var(--ease) infinite;
-  }
-  @keyframes pulseDot{
-    0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}
-    70%{box-shadow:0 0 0 8px rgba(37,99,235,0)}
-    100%{box-shadow:0 0 0 0 rgba(37,99,235,0)}
-  }
-
-  .hero h1{
-    font-size:clamp(2.6rem,5.6vw,4.6rem);
-    font-weight:600;line-height:1.02;
-    letter-spacing:-.045em;margin-bottom:26px;
-    color:var(--ink);
-  }
-  .hero h1 .muted{color:var(--dim);font-weight:500}
-
-  .hero .lede{
-    font-size:clamp(1rem,1.5vw,1.15rem);
-    color:var(--muted);line-height:1.55;
-    max-width:560px;margin-bottom:40px;
-  }
-  .hero .lede strong{color:var(--ink);font-weight:500}
-
-  .hero-links{display:flex;gap:12px;flex-wrap:wrap}
-
-  .btn{
-    display:inline-flex;align-items:center;gap:8px;
-    font-size:14px;font-weight:500;
-    padding:12px 22px;border-radius:100px;
-    transition:transform .2s var(--ease-out), background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
-    will-change:transform;
-    letter-spacing:-.005em;
-  }
-  .btn:hover{transform:translateY(-1px)}
-  .btn:active{transform:translateY(0)}
-  .btn-primary{background:var(--ink);color:#fff;border:1px solid var(--ink)}
-  .btn-primary:hover{background:#222}
-  .btn-glass{
-    background:rgba(255,255,255,.35);
-    backdrop-filter:blur(16px) saturate(180%);
-    -webkit-backdrop-filter:blur(16px) saturate(180%);
-    color:var(--ink);
-    border:1px solid rgba(255,255,255,.6);
-    box-shadow:0 1px 0 rgba(255,255,255,.7) inset;
-  }
-  .btn-glass:hover{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.85)}
-  .btn .arrow{transition:transform .25s var(--ease-out)}
-  .btn:hover .arrow{transform:translateX(3px)}
-
-  /* Portrait in a glass frame */
-  .portrait{
-    position:relative;
-    aspect-ratio:3/4;
-    border-radius:24px;
-    overflow:hidden;
-    background:rgba(255,255,255,.20);
-    border:1px solid rgba(255,255,255,.6);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.8) inset,
-      0 24px 60px -20px rgba(10,20,40,.24);
-  }
-  .portrait img{
-    width:100%;height:100%;object-fit:cover;object-position:center 20%;
-    opacity:0;transition:opacity .6s var(--ease-out);
-  }
-  .portrait img.loaded{opacity:1}
-  @media (max-width:860px){
-    .hero{padding:120px 0 80px}
-    .hero-grid{grid-template-columns:1fr;gap:56px}
-    .portrait{max-width:420px}
-  }
-
-  /* ============================================================
-     SECTION — uniform, no color shifts
-     ============================================================ */
-  .section{padding:100px 0}
-  .section + .section{border-top:1px solid var(--line)}
-
-  .section-head{
-    display:flex;justify-content:space-between;align-items:flex-end;
-    gap:32px;margin-bottom:48px;flex-wrap:wrap;
-  }
-  .section-label{
-    font-family:var(--mono);font-size:11.5px;
-    color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
-  }
-  .section-title{
-    font-size:clamp(1.75rem,3.4vw,2.6rem);
-    font-weight:600;letter-spacing:-.035em;
-    line-height:1.12;max-width:640px;margin-top:10px;
-  }
-
-  /* ============================================================
-     SKILLS — infinite marquee of glass cards
-     ============================================================ */
-  .marquee-wrap{
-    -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
-    mask-image:linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
-    padding:8px 0;
-  }
-
-  .marquee{
-    display:flex;gap:16px;
-    width:max-content;
-    animation:marquee 60s linear infinite;
-    will-change:transform;
-    padding:8px 0;
-  }
-  .marquee:hover{animation-play-state:paused}
-  @keyframes marquee{
-    from{transform:translate3d(0,0,0)}
-    to{transform:translate3d(-50%,0,0)}
-  }
-
-  .skill-card{
-    flex:0 0 auto;
-    width:330px;
-    padding:26px;
-    border-radius:22px;
-    /* Liquid glass — real transparency */
-    background:rgba(255,255,255,.14);
-    backdrop-filter:blur(22px) saturate(180%);
-    -webkit-backdrop-filter:blur(22px) saturate(180%);
-    border:1px solid rgba(255,255,255,.5);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.7) inset,
-      0 -1px 0 rgba(0,0,0,.05) inset,
-      0 16px 40px -20px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
-    transition:transform .35s var(--ease-out), border-color .3s var(--ease), box-shadow .35s var(--ease-out);
-    will-change:transform;
-  }
-  /* Specular top highlight */
-  .skill-card::before{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);
-    z-index:1;
-  }
-  /* Meniscus edge */
-  .skill-card::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
-  }
-  .skill-card > *{position:relative;z-index:4}
-  .skill-card:hover{
-    transform:translateY(-3px);
-    border-color:rgba(255,255,255,.8);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.85) inset,
-      0 -1px 0 rgba(0,0,0,.05) inset,
-      0 24px 50px -20px rgba(10,20,40,.30);
-  }
-  @media (max-width:520px){ .skill-card{width:275px;padding:22px} }
-
-  .skill-num{
-    font-family:var(--mono);font-size:11px;
-    color:var(--muted);letter-spacing:.06em;margin-bottom:20px;
-    display:flex;align-items:center;gap:8px;
-  }
-  .skill-num::before{
-    content:"";width:14px;height:1px;
-    background:var(--blue);opacity:.65;
-  }
-  .skill-card h3{
-    font-size:21px;font-weight:600;
-    letter-spacing:-.025em;line-height:1.2;
-    margin-bottom:10px;color:var(--ink);
-  }
-  .skill-card p{
-    font-size:13.5px;color:var(--muted);
-    line-height:1.55;margin-bottom:22px;min-height:42px;
-  }
-  .skill-tags{
-    display:flex;flex-wrap:wrap;gap:6px;
-    padding-top:18px;
-    border-top:1px solid rgba(10,10,10,.08);
-  }
-  .skill-tag{
-    font-family:var(--mono);font-size:10.5px;
-    padding:4px 10px;border-radius:100px;
-    background:rgba(255,255,255,.4);
-    border:1px solid rgba(255,255,255,.6);
-    color:var(--ink-2);
-    letter-spacing:.01em;
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-  }
-
-  .marquee-hint{
-    font-family:var(--mono);font-size:11px;
-    color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
-    margin-top:20px;display:flex;align-items:center;gap:10px;
-  }
-  .marquee-hint::before{
-    content:"";width:20px;height:1px;
-    background:var(--dim);opacity:.5;
-  }
-
-  /* ============================================================
-     INTERESTS — same palette, glass cards
-     ============================================================ */
-  .interests-grid{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:16px;
-  }
-  .interest{
-    grid-column:span 2;
-    padding:28px;
-    border-radius:22px;
-    background:rgba(255,255,255,.14);
-    backdrop-filter:blur(22px) saturate(180%);
-    -webkit-backdrop-filter:blur(22px) saturate(180%);
-    border:1px solid rgba(255,255,255,.5);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.7) inset,
-      0 -1px 0 rgba(0,0,0,.05) inset,
-      0 16px 40px -20px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
-    transition:transform .4s var(--ease-out), border-color .3s var(--ease), box-shadow .4s var(--ease-out);
-    will-change:transform;
-  }
-  .interest::before{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);
-    z-index:1;
-  }
-  .interest::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
-  }
-  .interest > *{position:relative;z-index:4}
-  .interest:hover{
-    transform:translateY(-3px);
-    border-color:rgba(255,255,255,.8);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.85) inset,
-      0 -1px 0 rgba(0,0,0,.05) inset,
-      0 24px 50px -20px rgba(10,20,40,.30);
-  }
-
-  .interest-tag{
-    font-family:var(--mono);font-size:10.5px;
-    color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
-    margin-bottom:16px;
-    display:flex;align-items:center;gap:8px;
-  }
-  .interest-tag::before{
-    content:"";width:5px;height:5px;border-radius:50%;
-    background:var(--blue);
-    box-shadow:0 0 8px rgba(37,99,235,.6);
-  }
-  .interest h3{
-    font-size:18px;font-weight:600;
-    letter-spacing:-.02em;line-height:1.25;
-    margin-bottom:10px;color:var(--ink);
-  }
-  .interest p{
-    font-size:13.5px;line-height:1.55;
-    color:var(--muted);
-  }
-  .interest .chips{
-    display:flex;flex-wrap:wrap;gap:5px;margin-top:18px;
-  }
-  .interest .chip{
-    font-family:var(--mono);font-size:10.5px;
-    padding:3px 9px;border-radius:100px;
-    background:rgba(255,255,255,.4);
-    border:1px solid rgba(255,255,255,.6);
-    color:var(--ink-2);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
-  }
-
-  .interest.wide{grid-column:span 4}
-
-  @media (max-width:1000px){
-    .interests-grid{grid-template-columns:repeat(4,1fr)}
-    .interest{grid-column:span 2}
-    .interest.wide{grid-column:span 4}
-  }
-  @media (max-width:640px){
-    .interests-grid{grid-template-columns:1fr}
-    .interest, .interest.wide{grid-column:span 1}
-  }
-
-  /* ============================================================
-     CONTACT
-     ============================================================ */
-  .contact{
-    padding:120px 0;
-    border-top:1px solid var(--line);
-  }
-  .contact-card{
-    padding:64px 56px;
-    border-radius:28px;
-    background:rgba(255,255,255,.18);
-    backdrop-filter:blur(28px) saturate(180%);
-    -webkit-backdrop-filter:blur(28px) saturate(180%);
-    border:1px solid rgba(255,255,255,.55);
-    box-shadow:
-      0 1px 0 rgba(255,255,255,.75) inset,
-      0 -1px 0 rgba(0,0,0,.04) inset,
-      0 24px 60px -24px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
-  }
-  .contact-card::before{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 35%);
-    z-index:1;
-  }
-  .contact-card::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
-  }
-  .contact-card > *{position:relative;z-index:4}
-
-  .contact-card h2{
-    font-size:clamp(2rem,4.4vw,3rem);
-    font-weight:600;letter-spacing:-.04em;
-    line-height:1.08;margin-bottom:22px;max-width:640px;
-  }
-  .contact-card p{
-    font-size:16px;color:var(--muted);
-    max-width:520px;margin-bottom:36px;line-height:1.6;
-  }
-  .contact-links{display:flex;gap:12px;flex-wrap:wrap}
-  @media (max-width:640px){ .contact-card{padding:44px 26px} }
-
-  /* ============================================================
-     FOOTER
-     ============================================================ */
-  footer{border-top:1px solid var(--line);padding:40px 0}
-  .footer-inner{
-    display:flex;justify-content:space-between;align-items:center;
-    gap:24px;flex-wrap:wrap;
-    font-family:var(--mono);font-size:11.5px;
-    color:var(--dim);letter-spacing:.04em;
-  }
-  .footer-inner .links{display:flex;gap:24px}
-  .footer-inner a{transition:color .2s var(--ease)}
-  .footer-inner a:hover{color:var(--ink)}
-
-  /* ============================================================
-     REVEAL
-     ============================================================ */
-  .reveal{
-    opacity:0;transform:translateY(14px);
-    transition:opacity .7s var(--ease-out), transform .7s var(--ease-out);
-    will-change:opacity, transform;
-  }
-  .reveal.in{opacity:1;transform:translateY(0)}
-  .reveal.d1{transition-delay:.05s}
-  .reveal.d2{transition-delay:.1s}
-  .reveal.d3{transition-delay:.15s}
-
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{
-      animation-duration:.01ms!important;
-      transition-duration:.01ms!important;
-      scroll-behavior:auto!important;
-    }
-    .marquee{animation:none!important;transform:translate3d(0,0,0)!important}
-    .backdrop::before{animation:none!important}
-    .reveal{opacity:1;transform:none}
-  }
+  /* >>> PASTE YOUR ENTIRE ORIGINAL <style> BLOCK HERE UNCHANGED <<< */
 </style>
 </head>
 <body>
 
-<!-- Ambient backdrop — this is what the glass refracts -->
 <div class="backdrop"></div>
 <div class="grain"></div>
 
 <div class="shell">
 
-  <!-- ============ NAV ============ -->
   <nav class="nav">
     <div class="nav-inner">
-      <a href="#" class="brand">Vinay V<sup>— 26</sup></a>
+      <a href="#" class="brand" data-k="brand">Vinay V<sup>— 26</sup></a>
       <div class="nav-links">
-        <a href="#skills">Skills</a>
-        <a href="#interests">Interests</a>
-        <a href="#contact">Contact</a>
+        <a href="#skills" data-k="nav_skills">Skills</a>
+        <a href="#interests" data-k="nav_interests">Interests</a>
+        <a href="#contact" data-k="nav_contact">Contact</a>
       </div>
-      <a href="mailto:Vinaycharyvelpula@gmail.com" class="nav-cta">Get in touch</a>
+      <a href="mailto:Vinaycharyvelpula@gmail.com" class="nav-cta" data-k="nav_cta">Get in touch</a>
     </div>
   </nav>
 
-  <!-- ============ HERO ============ -->
   <header class="hero">
     <div class="wrap">
       <div class="hero-grid">
-
         <div>
           <div class="meta">
             <span class="dot"></span>
-            <span>Available for work</span>
+            <span data-k="hero_status">Available for work</span>
             <span>·</span>
             <span id="clock">--:--</span>
-            <span>Hyderabad, IN</span>
+            <span data-k="hero_location">Hyderabad, IN</span>
           </div>
 
           <h1>
-            Software engineer,<br>
-            <span class="muted">building quiet systems.</span>
+            <span data-k="hero_title_1">Software engineer,</span><br>
+            <span class="muted" data-k="hero_title_2">building quiet systems.</span>
           </h1>
 
-          <p class="lede">
-            I design and build <strong>backend systems</strong> and <strong>ML infrastructure</strong> — services that stay correct under load, and models that behave predictably in production.
+          <p class="lede" data-k="hero_lede">
+            I design and build backend systems and ML infrastructure — services that stay correct under load, and models that behave predictably in production.
           </p>
 
           <div class="hero-links">
             <a href="#skills" class="btn btn-primary">
-              View skills <span class="arrow">→</span>
+              <span data-k="hero_btn1">View skills</span> <span class="arrow">→</span>
             </a>
-            <a href="mailto:Vinaycharyvelpula@gmail.com" class="btn btn-glass">Email</a>
+            <a href="mailto:Vinaycharyvelpula@gmail.com" class="btn btn-glass" data-k="hero_btn2">Email</a>
           </div>
         </div>
 
-       <div class="portrait">
-  <img
-    src="me.png"
-    alt="Vinay V"
-    loading="eager"
-    fetchpriority="high"
-    class="autoload"
-  >
-</div>
-
+        <div class="portrait">
+          <img src="me.png" alt="Vinay V" loading="eager" fetchpriority="high" class="autoload">
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- ============ SKILLS — infinite marquee ============ -->
   <section class="section" id="skills">
     <div class="wrap">
       <div class="section-head">
         <div>
-          <div class="section-label">(01) — Skills</div>
-          <h2 class="section-title reveal">A working toolkit, refined over years.</h2>
+          <div class="section-label" data-k="skills_label">(01) — Skills</div>
+          <h2 class="section-title reveal" data-k="skills_title">A working toolkit, refined over years.</h2>
         </div>
       </div>
     </div>
@@ -681,70 +80,70 @@
       <div class="marquee" id="marquee">
 
         <article class="skill-card">
-          <div class="skill-num">01 / Backend</div>
-          <h3>Backend systems</h3>
-          <p>Event-driven services, transaction pipelines, and APIs designed to stay correct under real load.</p>
+          <div class="skill-num" data-k="s1_num">01 / Backend</div>
+          <h3 data-k="s1_title">Backend systems</h3>
+          <p data-k="s1_desc">Event-driven services, transaction pipelines, and APIs designed to stay correct under real load.</p>
           <div class="skill-tags">
-            <span class="skill-tag">Java</span>
-            <span class="skill-tag">Spring Boot</span>
-            <span class="skill-tag">PostgreSQL</span>
-            <span class="skill-tag">Kafka</span>
+            <span class="skill-tag" data-k="s1_t1">Java</span>
+            <span class="skill-tag" data-k="s1_t2">Spring Boot</span>
+            <span class="skill-tag" data-k="s1_t3">PostgreSQL</span>
+            <span class="skill-tag" data-k="s1_t4">Kafka</span>
           </div>
         </article>
 
         <article class="skill-card">
-          <div class="skill-num">02 / ML</div>
-          <h3>ML &amp; inference</h3>
-          <p>Production inference services — batching, caching, and predictable latency in front of real models.</p>
+          <div class="skill-num" data-k="s2_num">02 / ML</div>
+          <h3 data-k="s2_title">ML &amp; inference</h3>
+          <p data-k="s2_desc">Production inference services — batching, caching, and predictable latency in front of real models.</p>
           <div class="skill-tags">
-            <span class="skill-tag">Python</span>
-            <span class="skill-tag">FastAPI</span>
-            <span class="skill-tag">PyTorch</span>
-            <span class="skill-tag">RAG</span>
+            <span class="skill-tag" data-k="s2_t1">Python</span>
+            <span class="skill-tag" data-k="s2_t2">FastAPI</span>
+            <span class="skill-tag" data-k="s2_t3">PyTorch</span>
+            <span class="skill-tag" data-k="s2_t4">RAG</span>
           </div>
         </article>
 
         <article class="skill-card">
-          <div class="skill-num">03 / Distributed</div>
-          <h3>Distributed systems</h3>
-          <p>Consensus, idempotency, and exactly-once semantics. Software that behaves when the network doesn't.</p>
+          <div class="skill-num" data-k="s3_num">03 / Distributed</div>
+          <h3 data-k="s3_title">Distributed systems</h3>
+          <p data-k="s3_desc">Consensus, idempotency, and exactly-once semantics. Software that behaves when the network doesn't.</p>
           <div class="skill-tags">
-            <span class="skill-tag">Redis</span>
-            <span class="skill-tag">Kafka Streams</span>
-            <span class="skill-tag">Event sourcing</span>
+            <span class="skill-tag" data-k="s3_t1">Redis</span>
+            <span class="skill-tag" data-k="s3_t2">Kafka Streams</span>
+            <span class="skill-tag" data-k="s3_t3">Event sourcing</span>
           </div>
         </article>
 
         <article class="skill-card">
-          <div class="skill-num">04 / Generative AI</div>
-          <h3>Applied AI</h3>
-          <p>Retrieval-augmented pipelines, embeddings, and grounded generation with citations you can trust.</p>
+          <div class="skill-num" data-k="s4_num">04 / Generative AI</div>
+          <h3 data-k="s4_title">Applied AI</h3>
+          <p data-k="s4_desc">Retrieval-augmented pipelines, embeddings, and grounded generation with citations you can trust.</p>
           <div class="skill-tags">
-            <span class="skill-tag">Transformers</span>
-            <span class="skill-tag">pgvector</span>
-            <span class="skill-tag">LangChain</span>
+            <span class="skill-tag" data-k="s4_t1">Transformers</span>
+            <span class="skill-tag" data-k="s4_t2">pgvector</span>
+            <span class="skill-tag" data-k="s4_t3">LangChain</span>
           </div>
         </article>
 
         <article class="skill-card">
-          <div class="skill-num">05 / Interface</div>
-          <h3>Interface &amp; craft</h3>
-          <p>The discipline of making complex things feel inevitable. Restraint, rhythm, and clear hierarchy.</p>
+          <div class="skill-num" data-k="s5_num">05 / Interface</div>
+          <h3 data-k="s5_title">Interface &amp; craft</h3>
+          <p data-k="s5_desc">The discipline of making complex things feel inevitable. Restraint, rhythm, and clear hierarchy.</p>
           <div class="skill-tags">
-            <span class="skill-tag">TypeScript</span>
-            <span class="skill-tag">React</span>
-            <span class="skill-tag">Typography</span>
+            <span class="skill-tag" data-k="s5_t1">TypeScript</span>
+            <span class="skill-tag" data-k="s5_t2">React</span>
+            <span class="skill-tag" data-k="s5_t3">Typography</span>
           </div>
         </article>
 
         <article class="skill-card">
-          <div class="skill-num">06 / Foundations</div>
-          <h3>Systems thinking</h3>
-          <p>Correctness, clarity, and the shape of the problem. Whether the solution will still make sense in three years.</p>
+          <div class="skill-num" data-k="s6_num">06 / Foundations</div>
+          <h3 data-k="s6_title">Systems thinking</h3>
+          <p data-k="s6_desc">Correctness, clarity, and the shape of the problem. Whether the solution will still make sense in three years.</p>
           <div class="skill-tags">
-            <span class="skill-tag">Architecture</span>
-            <span class="skill-tag">Observability</span>
-            <span class="skill-tag">Performance</span>
+            <span class="skill-tag" data-k="s6_t1">Architecture</span>
+            <span class="skill-tag" data-k="s6_t2">Observability</span>
+            <span class="skill-tag" data-k="s6_t3">Performance</span>
           </div>
         </article>
 
@@ -752,70 +151,69 @@
     </div>
 
     <div class="wrap">
-      <div class="marquee-hint">Hover to pause · Loops infinitely</div>
+      <div class="marquee-hint" data-k="skills_hint">Hover to pause · Loops infinitely</div>
     </div>
   </section>
 
-  <!-- ============ INTERESTS — same palette, glass ============ -->
   <section class="section" id="interests">
     <div class="wrap">
       <div class="section-head">
         <div>
-          <div class="section-label">(02) — Interests</div>
-          <h2 class="section-title reveal">A short field of curiosity.</h2>
+          <div class="section-label" data-k="int_label">(02) — Interests</div>
+          <h2 class="section-title reveal" data-k="int_title">A short field of curiosity.</h2>
         </div>
       </div>
 
       <div class="interests-grid">
 
         <article class="interest wide reveal d1">
-          <div class="interest-tag">Ongoing</div>
-          <h3>Complexity &amp; emergence</h3>
-          <p>Where systems stop being designed and start being discovered — simple rules compounding into surprising behavior. The interesting engineering lives at this boundary.</p>
+          <div class="interest-tag" data-k="i1_tag">Ongoing</div>
+          <h3 data-k="i1_title">Complexity &amp; emergence</h3>
+          <p data-k="i1_desc">Where systems stop being designed and start being discovered — simple rules compounding into surprising behavior. The interesting engineering lives at this boundary.</p>
           <div class="chips">
-            <span class="chip">Information theory</span>
-            <span class="chip">Compression</span>
-            <span class="chip">Cellular automata</span>
+            <span class="chip" data-k="i1_c1">Information theory</span>
+            <span class="chip" data-k="i1_c2">Compression</span>
+            <span class="chip" data-k="i1_c3">Cellular automata</span>
           </div>
         </article>
 
         <article class="interest reveal d2">
-          <div class="interest-tag">Active</div>
-          <h3>Generative AI</h3>
-          <p>Transformers, diffusion, and retrieval-augmented systems.</p>
+          <div class="interest-tag" data-k="i2_tag">Active</div>
+          <h3 data-k="i2_title">Generative AI</h3>
+          <p data-k="i2_desc">Transformers, diffusion, and retrieval-augmented systems.</p>
           <div class="chips">
-            <span class="chip">LLMs</span>
-            <span class="chip">RAG</span>
+            <span class="chip" data-k="i2_c1">LLMs</span>
+            <span class="chip" data-k="i2_c2">RAG</span>
           </div>
         </article>
 
         <article class="interest reveal d1">
-          <div class="interest-tag">Craft</div>
-          <h3>Interface &amp; motion</h3>
-          <p>Restraint, rhythm, and the physics of light.</p>
+          <div class="interest-tag" data-k="i3_tag">Craft</div>
+          <h3 data-k="i3_title">Interface &amp; motion</h3>
+          <p data-k="i3_desc">Restraint, rhythm, and the physics of light.</p>
           <div class="chips">
-            <span class="chip">Typography</span>
-            <span class="chip">Design</span>
+            <span class="chip" data-k="i3_c1">Typography</span>
+            <span class="chip" data-k="i3_c2">Design</span>
           </div>
         </article>
 
         <article class="interest reveal d2">
-          <div class="interest-tag">Reading</div>
-          <h3>Quiet software</h3>
-          <p>Code that disappears into the work it enables.</p>
+          <div class="interest-tag" data-k="i4_tag">Reading</div>
+          <h3 data-k="i4_title">Quiet software</h3>
+          <p data-k="i4_desc">Code that disappears into the work it enables.</p>
           <div class="chips">
-            <span class="chip">Craft</span>
-            <span class="chip">Clarity</span>
+            <span class="chip" data-k="i4_c1">Craft</span>
+            <span class="chip" data-k="i4_c2">Clarity</span>
           </div>
         </article>
 
         <article class="interest reveal d3">
-          <div class="interest-tag">Practice</div>
-          <h3>Systems thinking</h3>
-          <p>Correctness, clarity, and the shape of the problem.</p>
+          <div class="interest-tag" data-k="i5_tag">Practice</div>
+          <h3 data-k="i5_title">Systems thinking</h3>
+          <p data-k="i5_desc">Correctness, clarity, and the shape of the problem.</p>
           <div class="chips">
-            <span class="chip">Architecture</span>
-            <span class="chip">Performance</span>
+            <span class="chip" data-k="i5_c1">Architecture</span>
+            <span class="chip" data-k="i5_c2">Performance</span>
           </div>
         </article>
 
@@ -823,35 +221,33 @@
     </div>
   </section>
 
-  <!-- ============ CONTACT ============ -->
   <section class="contact" id="contact">
     <div class="wrap">
       <div class="contact-card reveal">
-        <div class="section-label" style="margin-bottom:20px">(03) — Contact</div>
-        <h2>Let's build something quiet.</h2>
-        <p>Open to roles and collaborations in backend engineering, ML systems, and applied AI.</p>
+        <div class="section-label" style="margin-bottom:20px" data-k="c_label">(03) — Contact</div>
+        <h2 data-k="c_title">Let's build something quiet.</h2>
+        <p data-k="c_desc">Open to roles and collaborations in backend engineering, ML systems, and applied AI.</p>
         <div class="contact-links">
           <a href="mailto:Vinaycharyvelpula@gmail.com" class="btn btn-primary">
-            Email me <span class="arrow">→</span>
+            <span data-k="c_btn1">Email me</span> <span class="arrow">→</span>
           </a>
-          <a href="https://github.com/vinaix" target="_blank" rel="noopener" class="btn btn-glass">GitHub</a>
-          <a href="https://www.linkedin.com/in/vinaix" target="_blank" rel="noopener" class="btn btn-glass">LinkedIn</a>
+          <a href="https://github.com/vinaix" target="_blank" rel="noopener" class="btn btn-glass" data-k="c_btn2">GitHub</a>
+          <a href="https://www.linkedin.com/in/vinaix" target="_blank" rel="noopener" class="btn btn-glass" data-k="c_btn3">LinkedIn</a>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ FOOTER ============ -->
   <footer>
     <div class="wrap">
       <div class="footer-inner">
-        <span>© 2026 Vinay V</span>
+        <span data-k="f_copy">© 2026 Vinay V</span>
         <div class="links">
-          <a href="https://github.com/vinaix" target="_blank" rel="noopener">GitHub</a>
-          <a href="https://www.linkedin.com/in/vinaix" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="https://x.com/" target="_blank" rel="noopener">X</a>
+          <a href="https://github.com/vinaix" target="_blank" rel="noopener" data-k="f_gh">GitHub</a>
+          <a href="https://www.linkedin.com/in/vinaix" target="_blank" rel="noopener" data-k="f_li">LinkedIn</a>
+          <a href="https://x.com/" target="_blank" rel="noopener" data-k="f_x">X</a>
         </div>
-        <span>Hyderabad · GMT+5:30</span>
+        <span data-k="f_loc">Hyderabad · GMT+5:30</span>
       </div>
     </div>
   </footer>
@@ -859,7 +255,20 @@
 </div>
 
 <script>
-  /* Infinite marquee — duplicate cards so translate -50% is seamless */
+  /* ---- Load editable content from DB ---- */
+  (async function loadContent(){
+    try {
+      const res = await fetch('/api/data', { cache: 'no-store' });
+      if (!res.ok) return;
+      const data = await res.json();
+      document.querySelectorAll('[data-k]').forEach(el => {
+        const k = el.getAttribute('data-k');
+        if (data[k] != null && data[k] !== '') el.textContent = data[k];
+      });
+    } catch (e) { /* keep defaults if offline */ }
+  })();
+
+  /* Infinite marquee */
   (function(){
     const m = document.getElementById('marquee');
     if (!m) return;
@@ -894,10 +303,7 @@
   /* Reveal */
   const io = new IntersectionObserver(entries => {
     for (const e of entries){
-      if (e.isIntersecting){
-        e.target.classList.add('in');
-        io.unobserve(e.target);
-      }
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
     }
   }, { threshold: 0.1, rootMargin: '0px 0px -6% 0px' });
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
