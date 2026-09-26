@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Vinay V</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#eef1f5; --ink:#0a0a0a; --ink-2:#1c1c1e;
+    --muted:#5f6672; --dim:#8a8f99;
+    --line:rgba(10,10,10,.08); --line-2:rgba(10,10,10,.14);
+    --blue:#2563eb;
+    --glass-bg:rgba(255,255,255,.10);
+    --glass-bg-strong:rgba(255,255,255,.16);
+    --glass-border-dim:rgba(255,255,255,.30);
+    --font:-apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Helvetica Neue", Arial, sans-serif;
+    --mono:ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
+    --ease:cubic-bezier(.4,0,.2,1);
+    --ease-out:cubic-bezier(0,0,.2,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:var(--font);background:var(--bg);color:var(--ink);
+    line-height:1.5;letter-spacing:-.012em;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;position:relative;overflow-x:hidden;
+  }
+  .backdrop{
+    position:fixed;inset:0;z-index:0;overflow:hidden;
+    background:
+      radial-gradient(ellipse 80% 60% at 15% 20%, rgba(37,99,235,.22), transparent 60%),
+      radial-gradient(ellipse 70% 60% at 85% 15%, rgba(120,140,200,.20), transparent 60%),
+      radial-gradient(ellipse 80% 70% at 75% 85%, rgba(37,99,235,.14), transparent 60%),
+      radial-gradient(ellipse 60% 50% at 25% 90%, rgba(140,160,220,.16), transparent 60%),
+      linear-gradient(180deg,#eef1f5 0%,#e7ebf2 100%);
+  }
+  .backdrop::before{
+    content:"";position:absolute;inset:-10%;
+    background:
+      radial-gradient(circle 400px at 25% 35%, rgba(120,150,230,.35), transparent 70%),
+      radial-gradient(circle 500px at 75% 65%, rgba(90,120,200,.28), transparent 70%),
+      radial-gradient(circle 350px at 50% 15%, rgba(180,200,255,.30), transparent 70%),
+      radial-gradient(circle 450px at 60% 90%, rgba(60,90,180,.20), transparent 70%);
+    filter:blur(60px) saturate(140%);
+    animation:drift 40s ease-in-out infinite;
+  }
+  @keyframes drift{
+    0%,100%{transform:translate3d(0,0,0) scale(1)}
+    33%{transform:translate3d(2%,-3%,0) scale(1.06)}
+    66%{transform:translate3d(-3%,2%,0) scale(.96)}
+  }
+  .grain{
+    position:fixed;inset:0;z-index:1;pointer-events:none;
+    opacity:.05;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  }
+  .shell{position:relative;z-index:2;max-width:920px;margin:0 auto;padding:32px 24px 80px}
+
+  /* Glass card */
+  .card{
+    position:relative;
+    background:rgba(255,255,255,.16);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,.55);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.7) inset,
+      0 -1px 0 rgba(0,0,0,.05) inset,
+      0 16px 40px -20px rgba(10,20,40,.22);
+    border-radius:22px;overflow:hidden;isolation:isolate;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 30%);
+    z-index:1;
+  }
+  .card::after{
+    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+    padding:1px;
+    background:linear-gradient(135deg,rgba(255,255,255,.9),transparent 35%,rgba(255,255,255,.5));
+    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    z-index:3;
+  }
+  .card > *{position:relative;z-index:4}
+
+  /* Top bar */
+  .topbar{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 22px;margin-bottom:24px;border-radius:100px;
+    background:rgba(255,255,255,.16);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,.35);
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset,0 10px 32px -12px rgba(10,20,40,.18);
+  }
+  .brand{font-size:14px;font-weight:600;display:flex;align-items:baseline;gap:8px}
+  .brand sup{font-family:var(--mono);font-size:9px;color:var(--dim);letter-spacing:.06em;position:relative;top:-5px}
+  .top-actions{display:flex;gap:10px;align-items:center;font-size:13px}
+
+  /* Buttons */
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13.5px;font-weight:500;
+    padding:9px 18px;border-radius:100px;cursor:pointer;
+    transition:transform .2s var(--ease-out),background .2s var(--ease),color .2s var(--ease),border-color .2s var(--ease);
+    border:1px solid transparent;font-family:inherit;letter-spacing:-.005em;
+  }
+  .btn:hover{transform:translateY(-1px)}
+  .btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn-primary:hover{background:#222}
+  .btn-glass{
+    background:rgba(255,255,255,.4);color:var(--ink);
+    border-color:rgba(255,255,255,.6);
+    box-shadow:0 1px 0 rgba(255,255,255,.7) inset;
+  }
+  .btn-glass:hover{background:rgba(255,255,255,.6)}
+  .btn-ghost{
+    background:transparent;color:var(--muted);
+    border-color:rgba(10,10,10,.14);
+  }
+  .btn-ghost:hover{color:var(--ink);border-color:rgba(10,10,10,.3)}
+
+  /* Login */
+  .login-wrap{
+    max-width:400px;margin:12vh auto 0;
+  }
+  .login-card{padding:40px 34px}
+  .login-card h1{font-size:24px;font-weight:600;letter-spacing:-.03em;margin-bottom:8px}
+  .login-card p{font-size:13.5px;color:var(--muted);margin-bottom:26px}
+
+  .field{margin-bottom:16px}
+  .field label{
+    display:block;font-family:var(--mono);font-size:10.5px;
+    text-transform:uppercase;letter-spacing:.1em;
+    color:var(--muted);margin-bottom:7px;
+  }
+  .field input,
+  .field textarea{
+    width:100%;font-family:inherit;font-size:14px;color:var(--ink);
+    padding:11px 14px;border-radius:12px;
+    background:rgba(255,255,255,.5);
+    border:1px solid rgba(10,10,10,.10);
+    outline:none;
+    transition:border-color .2s var(--ease),background .2s var(--ease);
+    resize:vertical;
+  }
+  .field textarea{min-height:78px;line-height:1.5}
+  .field input:focus,
+  .field textarea:focus{
+    border-color:var(--blue);
+    background:rgba(255,255,255,.75);
+  }
+  .field input::placeholder,
+  .field textarea::placeholder{
+    color:var(--dim);font-size:12.5px;
+  }
+
+  /* Editor sections */
+  .editor-head{
+    display:flex;justify-content:space-between;align-items:center;
+    margin-bottom:20px;gap:16px;flex-wrap:wrap;
+  }
+  .editor-head h1{font-size:20px;font-weight:600;letter-spacing:-.02em}
+  .section-block{margin-bottom:22px;padding:26px 24px}
+  .section-block h2{
+    font-size:14px;font-weight:600;letter-spacing:-.01em;
+    margin-bottom:6px;display:flex;align-items:center;gap:10px;
+  }
+  .section-block h2::before{
+    content:"";width:14px;height:1px;background:var(--blue);opacity:.7;
+  }
+  .section-sub{
+    font-family:var(--mono);font-size:10.5px;
+    color:var(--dim);letter-spacing:.06em;margin-bottom:20px;
+  }
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+  @media (max-width:640px){ .grid2,.grid3{grid-template-columns:1fr} }
+
+  .save-bar{
+    position:sticky;bottom:20px;
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 20px;border-radius:100px;
+    background:rgba(255,255,255,.6);
+    backdrop-filter:blur(24px) saturate(180%);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,.7);
+    box-shadow:0 1px 0 rgba(255,255,255,.8) inset,0 14px 40px -16px rgba(10,20,40,.28);
+    margin-top:24px;gap:16px;
+  }
+  .status{font-family:var(--mono);font-size:11.5px;color:var(--muted);letter-spacing:.04em}
+  .status.ok{color:#1a7f37}
+  .status.err{color:#c0392b}
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="backdrop"></div>
+<div class="grain"></div>
+<div class="shell">
+
+  <!-- LOGIN VIEW -->
+  <div id="loginView" class="login-wrap">
+    <div class="card login-card">
+      <h1>Admin</h1>
+      <p>Sign in to edit the portfolio content.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="u">Username</label>
+          <input id="u" name="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="p">Password</label>
+          <input id="p" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:22px">
+          <button type="submit" class="btn btn-primary">Sign in</button>
+          <span id="loginStatus" class="status"></span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- EDITOR VIEW -->
+  <div id="editorView" class="hidden">
+    <div class="topbar">
+      <div class="brand">Vinay V<sup>— admin</sup></div>
+      <div class="top-actions">
+        <span class="status" id="whoami"></span>
+        <button class="btn btn-ghost" id="logoutBtn">Sign out</button>
+      </div>
+    </div>
+
+    <div class="editor-head">
+      <h1>Content</h1>
+      <span class="status">Changes go live on <code style="font-family:var(--mono)">/</code> immediately after save.</span>
+    </div>
+
+    <form id="editorForm">
+
+      <!-- HERO -->
+      <div class="card section-block">
+        <h2>Hero</h2>
+        <div class="section-sub">Top of the page</div>
+        <div class="field"><label>Brand</label>
+          <input data-key="brand" placeholder="Vinay V — 26"></div>
+        <div class="grid2">
+          <div class="field"><label>Status pill</label>
+            <input data-key="hero_status" placeholder="Available for work"></div>
+          <div class="field"><label>Location</label>
+            <input data-key="hero_location" placeholder="Hyderabad, IN"></div>
+        </div>
+        <div class="grid2">
+          <div class="field"><label>Title — line 1</label>
+            <input data-key="hero_title_1" placeholder="Software engineer,"></div>
+          <div class="field"><label>Title — line 2 (muted)</label>
+            <input data-key="hero_title_2" placeholder="building quiet systems."></div>
+        </div>
+        <div class="field"><label>Lede paragraph</label>
+          <textarea data-key="hero_lede" placeholder="I design and build backend systems and ML infrastructure…"></textarea></div>
+        <div class="grid2">
+          <div class="field"><label>Button 1 label</label>
+            <input data-key="hero_btn1" placeholder="View skills"></div>
+          <div class="field"><label>Button 2 label</label>
+            <input data-key="hero_btn2" placeholder="Email"></div>
+        </div>
+      </div>
+
+      <!-- NAV -->
+      <div class="card section-block">
+        <h2>Navigation</h2>
+        <div class="section-sub">Menu labels</div>
+        <div class="grid3">
+          <div class="field"><label>Skills link</label>
+            <input data-key="nav_skills" placeholder="Skills"></div>
+          <div class="field"><label>Interests link</label>
+            <input data-key="nav_interests" placeholder="Interests"></div>
+          <div class="field"><label>Contact link</label>
+            <input data-key="nav_contact" placeholder="Contact"></div>
+        </div>
+        <div class="field"><label>CTA button</label>
+          <input data-key="nav_cta" placeholder="Get in touch"></div>
+      </div>
+
+      <!-- SKILLS -->
+      <div class="card section-block">
+        <h2>Skills section</h2>
+        <div class="section-sub">Heading + six cards</div>
+        <div class="grid2">
+          <div class="field"><label>Section label</label>
+            <input data-key="skills_label" placeholder="(01) — Skills"></div>
+          <div class="field"><label>Section title</label>
+            <input data-key="skills_title" placeholder="A working toolkit…"></div>
+        </div>
+        <div class="field"><label>Hint line</label>
+          <input data-key="skills_hint" placeholder="Hover to pause · Loops infinitely"></div>
+
+        <!-- card 1 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 01</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s1_num" placeholder="01 / Backend"></div>
+            <div class="field"><label>Title</label><input data-key="s1_title" placeholder="Backend systems"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s1_desc" placeholder="Event-driven services…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s1_t1" placeholder="Java"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s1_t2" placeholder="Spring Boot"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s1_t3" placeholder="PostgreSQL"></div>
+          </div>
+          <div class="field"><label>Tag 4</label><input data-key="s1_t4" placeholder="Kafka"></div>
+        </div>
+
+        <!-- card 2 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 02</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s2_num" placeholder="02 / ML"></div>
+            <div class="field"><label>Title</label><input data-key="s2_title" placeholder="ML &amp; inference"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s2_desc" placeholder="Production inference services…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s2_t1" placeholder="Python"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s2_t2" placeholder="FastAPI"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s2_t3" placeholder="PyTorch"></div>
+          </div>
+          <div class="field"><label>Tag 4</label><input data-key="s2_t4" placeholder="RAG"></div>
+        </div>
+
+        <!-- card 3 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 03</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s3_num" placeholder="03 / Distributed"></div>
+            <div class="field"><label>Title</label><input data-key="s3_title" placeholder="Distributed systems"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s3_desc" placeholder="Consensus, idempotency…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s3_t1" placeholder="Redis"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s3_t2" placeholder="Kafka Streams"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s3_t3" placeholder="Event sourcing"></div>
+          </div>
+        </div>
+
+        <!-- card 4 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 04</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s4_num" placeholder="04 / Generative AI"></div>
+            <div class="field"><label>Title</label><input data-key="s4_title" placeholder="Applied AI"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s4_desc" placeholder="Retrieval-augmented pipelines…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s4_t1" placeholder="Transformers"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s4_t2" placeholder="pgvector"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s4_t3" placeholder="LangChain"></div>
+          </div>
+        </div>
+
+        <!-- card 5 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 05</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s5_num" placeholder="05 / Interface"></div>
+            <div class="field"><label>Title</label><input data-key="s5_title" placeholder="Interface &amp; craft"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s5_desc" placeholder="The discipline of making…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s5_t1" placeholder="TypeScript"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s5_t2" placeholder="React"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s5_t3" placeholder="Typography"></div>
+          </div>
+        </div>
+
+        <!-- card 6 -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 06</div>
+          <div class="grid2">
+            <div class="field"><label>Number</label><input data-key="s6_num" placeholder="06 / Foundations"></div>
+            <div class="field"><label>Title</label><input data-key="s6_title" placeholder="Systems thinking"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="s6_desc" placeholder="Correctness, clarity…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Tag 1</label><input data-key="s6_t1" placeholder="Architecture"></div>
+            <div class="field"><label>Tag 2</label><input data-key="s6_t2" placeholder="Observability"></div>
+            <div class="field"><label>Tag 3</label><input data-key="s6_t3" placeholder="Performance"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INTERESTS -->
+      <div class="card section-block">
+        <h2>Interests section</h2>
+        <div class="section-sub">Heading + five cards</div>
+        <div class="grid2">
+          <div class="field"><label>Section label</label>
+            <input data-key="int_label" placeholder="(02) — Interests"></div>
+          <div class="field"><label>Section title</label>
+            <input data-key="int_title" placeholder="A short field of curiosity."></div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 1 (wide)</div>
+          <div class="grid2">
+            <div class="field"><label>Tag</label><input data-key="i1_tag" placeholder="Ongoing"></div>
+            <div class="field"><label>Title</label><input data-key="i1_title" placeholder="Complexity &amp; emergence"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="i1_desc" placeholder="Where systems stop being designed…"></textarea></div>
+          <div class="grid3">
+            <div class="field"><label>Chip 1</label><input data-key="i1_c1" placeholder="Information theory"></div>
+            <div class="field"><label>Chip 2</label><input data-key="i1_c2" placeholder="Compression"></div>
+            <div class="field"><label>Chip 3</label><input data-key="i1_c3" placeholder="Cellular automata"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 2</div>
+          <div class="grid2">
+            <div class="field"><label>Tag</label><input data-key="i2_tag" placeholder="Active"></div>
+            <div class="field"><label>Title</label><input data-key="i2_title" placeholder="Generative AI"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="i2_desc" placeholder="Transformers, diffusion…"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Chip 1</label><input data-key="i2_c1" placeholder="LLMs"></div>
+            <div class="field"><label>Chip 2</label><input data-key="i2_c2" placeholder="RAG"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 3</div>
+          <div class="grid2">
+            <div class="field"><label>Tag</label><input data-key="i3_tag" placeholder="Craft"></div>
+            <div class="field"><label>Title</label><input data-key="i3_title" placeholder="Interface &amp; motion"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="i3_desc" placeholder="Restraint, rhythm…"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Chip 1</label><input data-key="i3_c1" placeholder="Typography"></div>
+            <div class="field"><label>Chip 2</label><input data-key="i3_c2" placeholder="Design"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 4</div>
+          <div class="grid2">
+            <div class="field"><label>Tag</label><input data-key="i4_tag" placeholder="Reading"></div>
+            <div class="field"><label>Title</label><input data-key="i4_title" placeholder="Quiet software"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="i4_desc" placeholder="Code that disappears…"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Chip 1</label><input data-key="i4_c1" placeholder="Craft"></div>
+            <div class="field"><label>Chip 2</label><input data-key="i4_c2" placeholder="Clarity"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid rgba(10,10,10,.08)">
+          <div class="section-sub" style="margin-bottom:12px">Card 5</div>
+          <div class="grid2">
+            <div class="field"><label>Tag</label><input data-key="i5_tag" placeholder="Practice"></div>
+            <div class="field"><label>Title</label><input data-key="i5_title" placeholder="Systems thinking"></div>
+          </div>
+          <div class="field"><label>Description</label>
+            <textarea data-key="i5_desc" placeholder="Correctness, clarity…"></textarea></div>
+          <div class="grid2">
+            <div class="field"><label>Chip 1</label><input data-key="i5_c1" placeholder="Architecture"></div>
+            <div class="field"><label>Chip 2</label><input data-key="i5_c2" placeholder="Performance"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="card section-block">
+        <h2>Contact section</h2>
+        <div class="section-sub">Heading + buttons</div>
+        <div class="field"><label>Section label</label>
+          <input data-key="c_label" placeholder="(03) — Contact"></div>
+        <div class="field"><label>Title</label>
+          <input data-key="c_title" placeholder="Let's build something quiet."></div>
+        <div class="field"><label>Description</label>
+          <textarea data-key="c_desc" placeholder="Open to roles and collaborations…"></textarea></div>
+        <div class="grid3">
+          <div class="field"><label>Button 1</label><input data-key="c_btn1" placeholder="Email me"></div>
+          <div class="field"><label>Button 2</label><input data-key="c_btn2" placeholder="GitHub"></div>
+          <div class="field"><label>Button 3</label><input data-key="c_btn3" placeholder="LinkedIn"></div>
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="card section-block">
+        <h2>Footer</h2>
+        <div class="section-sub">Bottom strip</div>
+        <div class="grid2">
+          <div class="field"><label>Copyright</label><input data-key="f_copy" placeholder="© 2026 Vinay V"></div>
+          <div class="field"><label>Location line</label><input data-key="f_loc" placeholder="Hyderabad · GMT+5:30"></div>
+        </div>
+        <div class="grid3">
+          <div class="field"><label>GitHub label</label><input data-key="f_gh" placeholder="GitHub"></div>
+          <div class="field"><label>LinkedIn label</label><input data-key="f_li" placeholder="LinkedIn"></div>
+          <div class="field"><label>X label</label><input data-key="f_x" placeholder="X"></div>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="status" id="saveStatus">Ready.</span>
+        <button type="submit" class="btn btn-primary" id="saveBtn">Save changes</button>
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+  const $ = s => document.querySelector(s);
+  const loginView  = $('#loginView');
+  const editorView = $('#editorView');
+  const loginStatus = $('#loginStatus');
+  const saveStatus  = $('#saveStatus');
+  const whoami      = $('#whoami');
+
+  async function api(action, opts = {}) {
+    const url = action ? `/api/data?action=${action}` : '/api/data';
+    const res = await fetch(url, {
+      method: opts.method || 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: opts.body ? JSON.stringify(opts.body) : undefined,
+      cache: 'no-store'
+    });
+    let data = null;
+    try { data = await res.json(); } catch {}
+    return { ok: res.ok, status: res.status, data };
+  }
+
+  /* ---------- boot: check session ---------- */
+  (async function boot(){
+    const me = await api('me');
+    if (me.data?.authed) {
+      whoami.textContent = `signed in as ${me.data.user}`;
+      showEditor();
+    } else {
+      showLogin();
+    }
+  })();
+
+  function showLogin(){
+    loginView.classList.remove('hidden');
+    editorView.classList.add('hidden');
+  }
+  async function showEditor(){
+    loginView.classList.add('hidden');
+    editorView.classList.remove('hidden');
+    await loadContent();
+  }
+
+  /* ---------- login ---------- */
+  $('#loginForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    loginStatus.textContent = 'Signing in…';
+    loginStatus.className = 'status';
+    const username = $('#u').value.trim();
+    const password = $('#p').value;
+    const r = await api('login', { method: 'POST', body: { username, password } });
+    if (r.ok) {
+      loginStatus.textContent = '';
+      whoami.textContent = `signed in as ${username}`;
+      showEditor();
+    } else {
+      loginStatus.textContent = 'Invalid credentials.';
+      loginStatus.className = 'status err';
+    }
+  });
+
+  /* ---------- logout ---------- */
+  $('#logoutBtn').addEventListener('click', async () => {
+    await api('logout', { method: 'POST' });
+    showLogin();
+  });
+
+  /* ---------- load content into form ---------- */
+  async function loadContent(){
+    saveStatus.textContent = 'Loading…';
+    saveStatus.className = 'status';
+    const r = await api();
+    if (!r.ok) {
+      saveStatus.textContent = 'Failed to load.';
+      saveStatus.className = 'status err';
+      return;
+    }
+    const data = r.data || {};
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const k = el.getAttribute('data-key');
+      if (data[k] != null) el.value = data[k];
+    });
+    saveStatus.textContent = 'Loaded. Edit and save when ready.';
+    saveStatus.className = 'status';
+  }
+
+  /* ---------- save ---------- */
+  $('#editorForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    saveStatus.textContent = 'Saving…';
+    saveStatus.className = 'status';
+
+    const payload = {};
+    document.querySelectorAll('[data-key]').forEach(el => {
+      const k = el.getAttribute('data-key');
+      const v = (el.value ?? '').toString();
+      if (v !== '') payload[k] = v;   // only send non-empty so blanks don't overwrite
+    });
+
+    const r = await api('save', { method: 'POST', body: payload });
+    if (r.ok) {
+      saveStatus.textContent = `Saved ${r.data.saved} field(s).`;
+      saveStatus.className = 'status ok';
+    } else if (r.status === 401) {
+      saveStatus.textContent = 'Session expired. Please sign in again.';
+      saveStatus.className = 'status err';
+      showLogin();
+    } else {
+      saveStatus.textContent = 'Save failed.';
+      saveStatus.className = 'status err';
+    }
+  });
+</script>
+</body>
+</html>
