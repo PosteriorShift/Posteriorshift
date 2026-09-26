@@ -55,8 +55,18 @@ async function readBody(req) {
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
 
-  const action = (req.query.action || '').toString();
+  // TEMP DEBUG — remove after diagnosing
+  if (req.query.debug === 'env') {
+    return res.status(200).json({
+      has_db:        !!process.env.DATABASE_URL,
+      has_jwt:       !!process.env.JWT_SECRET,
+      has_user:      !!process.env.ADMIN_USER,
+      has_pass:      !!process.env.ADMIN_PASS,
+      has_pass_hash: !!process.env.ADMIN_PASS_HASH,
+    });
+  }
 
+  const action = (req.query.action || '').toString();
   // ---- GET /api/data  → public content (key/value map) ----
   if (req.method === 'GET' && !action) {
     try {
