@@ -484,7 +484,91 @@
     .marquee{animation:none!important;transform:translate3d(0,0,0)!important}
     .backdrop::before{animation:none!important}
     .reveal{opacity:1;transform:none}
+    
   }
+  /* ---------- WIP Popup ---------- */
+.wip-overlay{
+  position:fixed;inset:0;z-index:1000;
+  background:rgba(10,20,40,.35);
+  backdrop-filter:blur(8px) saturate(140%);
+  -webkit-backdrop-filter:blur(8px) saturate(140%);
+  display:flex;align-items:center;justify-content:center;
+  padding:24px;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s var(--ease-out);
+}
+.wip-overlay.show{opacity:1;pointer-events:auto}
+
+.wip-card{
+  position:relative;
+  max-width:440px;width:100%;
+  padding:32px 28px 28px;
+  border-radius:24px;
+  background:rgba(255,255,255,.22);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.85) inset,
+    0 -1px 0 rgba(0,0,0,.05) inset,
+    0 30px 80px -30px rgba(10,20,40,.45);
+  isolation:isolate;overflow:hidden;
+  transform:translateY(12px) scale(.98);
+  transition:transform .4s var(--ease-out);
+}
+.wip-overlay.show .wip-card{transform:translateY(0) scale(1)}
+.wip-card::before{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 40%);z-index:1;
+}
+.wip-card > *{position:relative;z-index:2}
+
+.wip-close{
+  position:absolute;top:12px;right:12px;
+  width:32px;height:32px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.6);
+  background:rgba(255,255,255,.35);
+  color:var(--ink);
+  font-size:16px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  transition:background .2s var(--ease), transform .2s var(--ease-out);
+}
+.wip-close:hover{background:rgba(255,255,255,.7);transform:rotate(90deg)}
+.wip-close:active{transform:scale(.94)}
+
+.wip-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);
+  padding:5px 10px;border-radius:100px;
+  background:rgba(255,255,255,.5);
+  border:1px solid rgba(255,255,255,.7);
+  margin-bottom:16px;
+}
+.wip-badge::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--blue);
+  box-shadow:0 0 0 0 rgba(37,99,235,.6);
+  animation:pulseDot 2s var(--ease) infinite;
+}
+
+.wip-card h2{
+  font-size:22px;font-weight:600;letter-spacing:-.03em;
+  line-height:1.2;margin-bottom:10px;color:var(--ink);
+  word-break:break-word;
+}
+.wip-card p{
+  font-size:14.5px;color:var(--muted);
+  line-height:1.55;margin-bottom:22px;
+}
+.wip-actions{display:flex;gap:10px;flex-wrap:wrap}
+@media (max-width:420px){
+  .wip-card{padding:26px 20px 22px}
+  .wip-card h2{font-size:19px}
+  .wip-card p{font-size:13.5px}
+}
 </style>
 </head>
 <body>
@@ -932,6 +1016,56 @@ window.addEventListener('message', e => {
    ===================================================================== */
 load();
 setInterval(updateClock, 30000);
+  /* =====================================================================
+   WORK-IN-PROGRESS POPUP
+   Shows once per browser session. Dismiss via ✕, "Got it", or Esc/backdrop.
+   Uses sessionStorage so it doesn't nag on every page reload.
+   ===================================================================== */
+(function(){
+  const KEY = 'vv_wip_seen';
+  const overlay = document.getElementById('wipOverlay');
+  const closeBtn = document.getElementById('wipClose');
+  const dismissBtn = document.getElementById('wipDismiss');
+  if(!overlay) return;
+
+  // Skip if already dismissed in this session
+  try{
+    if(sessionStorage.getItem(KEY) === '1') return;
+  }catch(e){ /* sessionStorage may be blocked — fall through and show */ }
+
+  // Show shortly after load (let the page render first)
+  setTimeout(() => overlay.classList.add('show'), 400);
+
+  const hide = () => {
+    overlay.classList.remove('show');
+    try{ sessionStorage.setItem(KEY, '1'); }catch(e){}
+  };
+
+  closeBtn?.addEventListener('click', hide);
+  dismissBtn?.addEventListener('click', hide);
+
+  // Close on backdrop click (only if you click outside the card)
+  overlay.addEventListener('click', e => {
+    if(e.target === overlay) hide();
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && overlay.classList.contains('show')) hide();
+  });
+})();
 </script>
+  <!-- Work-in-progress notice (shown once per browser session) -->
+<div class="wip-overlay" id="wipOverlay" role="dialog" aria-modal="true" aria-labelledby="wipTitle">
+  <div class="wip-card">
+    <button class="wip-close" id="wipClose" aria-label="Close">✕</button>
+    <div class="wip-badge">Work in progress</div>
+    <h2 id="wipTitle">Site is still being built</h2>
+    <p>I'm actively updating this site and still learning. Some things may change or look unfinished — I'll keep improving it.</p>
+    <div class="wip-actions">
+      <button class="btn btn-primary" id="wipDismiss">Got it</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
