@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Vinay V — Software Engineer</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,21 +11,16 @@
 
 <style>
   :root{
-    /* ONE palette — used everywhere */
-    --bg:#eef1f5;                 /* light grey-blue base */
-    --ink:#0a0a0a;                /* near-black text */
+    --bg:#eef1f5;
+    --ink:#0a0a0a;
     --ink-2:#1c1c1e;
     --muted:#5f6672;
     --dim:#8a8f99;
     --line:rgba(10,10,10,.08);
-    --line-2:rgba(10,10,10,.14);
     --blue:#2563eb;
-    --blue-soft:rgba(37,99,235,.10);
 
-    /* Liquid glass — real transparency */
     --glass-bg:rgba(255,255,255,.10);
     --glass-bg-strong:rgba(255,255,255,.16);
-    --glass-border:rgba(255,255,255,.55);
     --glass-border-dim:rgba(255,255,255,.30);
     --glass-blur:22px;
     --glass-shadow:
@@ -33,7 +28,6 @@
       0 -1px 0 rgba(0,0,0,.06) inset,
       0 12px 40px -16px rgba(10,20,40,.20);
 
-    /* Apple-style type stack */
     --font:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --mono:ui-monospace, "SF Mono", "JetBrains Mono", Menlo, monospace;
 
@@ -51,16 +45,13 @@
     letter-spacing:-.012em;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
-    font-feature-settings:"ss01","cv11","cv02";
     position:relative;
     min-height:100vh;
     overflow-x:hidden;
+    width:100%;
   }
 
-  /* ============================================================
-     AMBIENT BACKDROP — this is what the glass refracts
-     Soft moving colour field BEHIND everything.
-     ============================================================ */
+  /* ---------- Backdrop ---------- */
   .backdrop{
     position:fixed;inset:0;z-index:0;overflow:hidden;
     background:
@@ -86,64 +77,23 @@
     33%{transform:translate3d(2%,-3%,0) scale(1.06)}
     66%{transform:translate3d(-3%,2%,0) scale(.96)}
   }
-
-  /* Grain overlay — page-wide */
   .grain{
     position:fixed;inset:0;z-index:1;pointer-events:none;
     opacity:.05;mix-blend-mode:multiply;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
   }
-
-  /* All content sits above the backdrop + grain */
   .shell{position:relative;z-index:2}
 
   ::selection{background:var(--blue);color:#fff}
   a{color:inherit;text-decoration:none}
   img{display:block;max-width:100%}
 
-  /* ============================================================
-     LIQUID GLASS — the real recipe
-     ============================================================ */
-  .glass{
-    position:relative;
-    background:var(--glass-bg);
-    backdrop-filter:blur(var(--glass-blur)) saturate(180%);
-    -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(180%);
-    border:1px solid var(--glass-border-dim);
-    box-shadow:var(--glass-shadow);
-    border-radius:20px;
-    overflow:hidden;
-    isolation:isolate;
-  }
-  /* Specular top highlight — mimics light catching the top edge */
-  .glass::before{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 30%);
-    z-index:1;
-  }
-  /* Meniscus edge — refraction ring */
-  .glass::after{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    padding:1px;
-    background:linear-gradient(135deg,
-      rgba(255,255,255,.9) 0%,
-      rgba(255,255,255,.1) 25%,
-      transparent 50%,
-      rgba(255,255,255,.15) 75%,
-      rgba(255,255,255,.6) 100%);
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
-  }
-  .glass > *{position:relative;z-index:4}
-
-  /* ============================================================
-     NAV — glass pill
-     ============================================================ */
+  /* ---------- Nav (fixed for mobile) ---------- */
   .nav{
-    position:fixed;top:16px;left:50%;transform:translateX(-50%);
+    position:fixed;top:12px;left:50%;transform:translateX(-50%);
     z-index:100;
-    width:min(1160px, calc(100% - 32px));
+    width:min(1160px, calc(100% - 24px));
+    max-width:calc(100% - 24px);
     border-radius:100px;
     background:var(--glass-bg-strong);
     backdrop-filter:blur(24px) saturate(180%);
@@ -153,68 +103,84 @@
       0 1px 0 rgba(255,255,255,.7) inset,
       0 -1px 0 rgba(0,0,0,.04) inset,
       0 10px 32px -12px rgba(10,20,40,.18);
-  }
-  .nav::after{
-    content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.85),transparent 30%,rgba(255,255,255,.4));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
+    overflow:hidden;
   }
   .nav-inner{
-    padding:11px 12px 11px 22px;
+    padding:10px 14px 10px 18px;
     display:flex;align-items:center;justify-content:space-between;
+    gap:8px;
+    flex-wrap:nowrap;
     position:relative;z-index:2;
   }
   .brand{
     font-size:15px;font-weight:600;letter-spacing:-.02em;
     display:flex;align-items:baseline;gap:7px;
+    flex-shrink:0;
   }
   .brand sup{
     font-family:var(--mono);font-size:9px;
     color:var(--dim);letter-spacing:.06em;
     position:relative;top:-5px;font-weight:500;
   }
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted)}
+  .nav-links{
+    display:flex;gap:20px;font-size:14px;color:var(--muted);
+    flex-shrink:1;overflow:hidden;white-space:nowrap;
+  }
   .nav-links a{transition:color .2s var(--ease)}
   .nav-links a:hover{color:var(--ink)}
   .nav-cta{
     font-size:13px;font-weight:500;
-    padding:8px 16px;
+    padding:7px 14px;
     background:var(--ink);color:#fff;
     border-radius:100px;
+    white-space:nowrap;flex-shrink:0;
     transition:transform .2s var(--ease-out), background .2s var(--ease);
   }
   .nav-cta:hover{background:#222;transform:translateY(-1px)}
+
   @media (max-width:760px){
     .nav-links{display:none}
-    .nav-inner{padding:10px 10px 10px 18px}
+    .nav-inner{padding:8px 8px 8px 16px}
+    .brand{font-size:14px}
+    .brand sup{font-size:8px;top:-4px}
+    .nav-cta{font-size:12px;padding:6px 12px}
+  }
+  @media (max-width:420px){
+    .nav{width:calc(100% - 16px);max-width:calc(100% - 16px);top:8px}
+    .nav-inner{padding:7px 7px 7px 14px}
+    .brand{font-size:13px}
+    .nav-cta{font-size:11px;padding:5px 10px}
   }
 
-  .wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 28px;width:100%}
   @media (max-width:720px){ .wrap{padding:0 18px} }
+  @media (max-width:420px){ .wrap{padding:0 14px} }
 
-  /* ============================================================
-     HERO
-     ============================================================ */
-  .hero{padding:150px 0 100px}
+  /* ---------- Hero ---------- */
+  .hero{padding:140px 0 80px}
+  @media (max-width:860px){ .hero{padding:120px 0 60px} }
+  @media (max-width:480px){ .hero{padding:104px 0 48px} }
+
   .hero-grid{
     display:grid;
     grid-template-columns:1.15fr .85fr;
     gap:72px;align-items:center;
   }
+  @media (max-width:860px){ .hero-grid{grid-template-columns:1fr;gap:40px} }
 
   .hero .meta{
     font-family:var(--mono);font-size:11.5px;
     color:var(--dim);letter-spacing:.05em;
-    display:flex;align-items:center;gap:14px;
-    margin-bottom:32px;flex-wrap:wrap;
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:28px;flex-wrap:wrap;
   }
+  @media (max-width:480px){ .hero .meta{font-size:10.5px;gap:8px;margin-bottom:22px} }
   .hero .meta .dot{
     width:6px;height:6px;border-radius:50%;
     background:var(--blue);
     box-shadow:0 0 0 0 rgba(37,99,235,.5);
     animation:pulseDot 2s var(--ease) infinite;
+    flex-shrink:0;
   }
   @keyframes pulseDot{
     0%{box-shadow:0 0 0 0 rgba(37,99,235,.5)}
@@ -223,30 +189,33 @@
   }
 
   .hero h1{
-    font-size:clamp(2.6rem,5.6vw,4.6rem);
+    font-size:clamp(2.2rem,5.6vw,4.6rem);
     font-weight:600;line-height:1.02;
-    letter-spacing:-.045em;margin-bottom:26px;
-    color:var(--ink);
+    letter-spacing:-.045em;margin-bottom:22px;
+    color:var(--ink);word-break:break-word;
   }
+  @media (max-width:480px){ .hero h1{font-size:clamp(1.9rem,8vw,2.6rem);letter-spacing:-.03em} }
   .hero h1 .muted{color:var(--dim);font-weight:500}
 
   .hero .lede{
-    font-size:clamp(1rem,1.5vw,1.15rem);
+    font-size:clamp(.95rem,1.5vw,1.15rem);
     color:var(--muted);line-height:1.55;
-    max-width:560px;margin-bottom:40px;
+    max-width:560px;margin-bottom:36px;
   }
+  @media (max-width:480px){ .hero .lede{font-size:.95rem;margin-bottom:28px} }
   .hero .lede strong{color:var(--ink);font-weight:500}
 
   .hero-links{display:flex;gap:12px;flex-wrap:wrap}
+  @media (max-width:480px){ .hero-links{gap:10px} }
 
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     font-size:14px;font-weight:500;
-    padding:12px 22px;border-radius:100px;
+    padding:11px 20px;border-radius:100px;
+    white-space:nowrap;
     transition:transform .2s var(--ease-out), background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
-    will-change:transform;
-    letter-spacing:-.005em;
   }
+  @media (max-width:480px){ .btn{font-size:13px;padding:10px 16px} }
   .btn:hover{transform:translateY(-1px)}
   .btn:active{transform:translateY(0)}
   .btn-primary{background:var(--ink);color:#fff;border:1px solid var(--ink)}
@@ -263,7 +232,6 @@
   .btn .arrow{transition:transform .25s var(--ease-out)}
   .btn:hover .arrow{transform:translateX(3px)}
 
-  /* Portrait in a glass frame */
   .portrait{
     position:relative;
     aspect-ratio:3/4;
@@ -274,53 +242,50 @@
     box-shadow:
       0 1px 0 rgba(255,255,255,.8) inset,
       0 24px 60px -20px rgba(10,20,40,.24);
+    max-width:100%;
   }
   .portrait img{
     width:100%;height:100%;object-fit:cover;object-position:center 20%;
     opacity:0;transition:opacity .6s var(--ease-out);
   }
   .portrait img.loaded{opacity:1}
-  @media (max-width:860px){
-    .hero{padding:120px 0 80px}
-    .hero-grid{grid-template-columns:1fr;gap:56px}
-    .portrait{max-width:420px}
-  }
+  @media (max-width:860px){ .portrait{max-width:380px;margin:0 auto} }
+  @media (max-width:480px){ .portrait{max-width:300px} }
 
-  /* ============================================================
-     SECTION — uniform, no color shifts
-     ============================================================ */
-  .section{padding:100px 0}
+  /* ---------- Section ---------- */
+  .section{padding:90px 0}
+  @media (max-width:720px){ .section{padding:64px 0} }
+  @media (max-width:480px){ .section{padding:52px 0} }
   .section + .section{border-top:1px solid var(--line)}
 
   .section-head{
     display:flex;justify-content:space-between;align-items:flex-end;
-    gap:32px;margin-bottom:48px;flex-wrap:wrap;
+    gap:24px;margin-bottom:40px;flex-wrap:wrap;
   }
+  @media (max-width:480px){ .section-head{margin-bottom:28px} }
+
   .section-label{
     font-family:var(--mono);font-size:11.5px;
     color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
   }
   .section-title{
-    font-size:clamp(1.75rem,3.4vw,2.6rem);
+    font-size:clamp(1.6rem,3.4vw,2.6rem);
     font-weight:600;letter-spacing:-.035em;
     line-height:1.12;max-width:640px;margin-top:10px;
+    word-break:break-word;
   }
+  @media (max-width:480px){ .section-title{font-size:1.5rem;letter-spacing:-.025em} }
 
-  /* ============================================================
-     SKILLS — infinite marquee of glass cards
-     ============================================================ */
+  /* ---------- Skills marquee ---------- */
   .marquee-wrap{
     -webkit-mask-image:linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
     mask-image:linear-gradient(90deg, transparent 0%, #000 5%, #000 95%, transparent 100%);
-    padding:8px 0;
+    padding:8px 0;overflow:hidden;
   }
-
   .marquee{
-    display:flex;gap:16px;
-    width:max-content;
+    display:flex;gap:16px;width:max-content;
     animation:marquee 60s linear infinite;
-    will-change:transform;
-    padding:8px 0;
+    will-change:transform;padding:8px 0;
   }
   .marquee:hover{animation-play-state:paused}
   @keyframes marquee{
@@ -329,11 +294,7 @@
   }
 
   .skill-card{
-    flex:0 0 auto;
-    width:330px;
-    padding:26px;
-    border-radius:22px;
-    /* Liquid glass — real transparency */
+    flex:0 0 auto;width:300px;padding:24px;border-radius:22px;
     background:rgba(255,255,255,.14);
     backdrop-filter:blur(22px) saturate(180%);
     -webkit-backdrop-filter:blur(22px) saturate(180%);
@@ -342,26 +303,14 @@
       0 1px 0 rgba(255,255,255,.7) inset,
       0 -1px 0 rgba(0,0,0,.05) inset,
       0 16px 40px -20px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
+    position:relative;overflow:hidden;isolation:isolate;
     transition:transform .35s var(--ease-out), border-color .3s var(--ease), box-shadow .35s var(--ease-out);
-    will-change:transform;
   }
-  /* Specular top highlight */
+  @media (max-width:520px){ .skill-card{width:260px;padding:20px} }
+  @media (max-width:380px){ .skill-card{width:230px;padding:18px} }
   .skill-card::before{
     content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);
-    z-index:1;
-  }
-  /* Meniscus edge */
-  .skill-card::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
+    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);z-index:1;
   }
   .skill-card > *{position:relative;z-index:4}
   .skill-card:hover{
@@ -372,40 +321,27 @@
       0 -1px 0 rgba(0,0,0,.05) inset,
       0 24px 50px -20px rgba(10,20,40,.30);
   }
-  @media (max-width:520px){ .skill-card{width:275px;padding:22px} }
-
   .skill-num{
-    font-family:var(--mono);font-size:11px;
-    color:var(--muted);letter-spacing:.06em;margin-bottom:20px;
+    font-family:var(--mono);font-size:10.5px;
+    color:var(--muted);letter-spacing:.06em;margin-bottom:16px;
     display:flex;align-items:center;gap:8px;
   }
-  .skill-num::before{
-    content:"";width:14px;height:1px;
-    background:var(--blue);opacity:.65;
-  }
+  .skill-num::before{content:"";width:12px;height:1px;background:var(--blue);opacity:.65;}
   .skill-card h3{
-    font-size:21px;font-weight:600;
-    letter-spacing:-.025em;line-height:1.2;
-    margin-bottom:10px;color:var(--ink);
+    font-size:19px;font-weight:600;letter-spacing:-.025em;
+    line-height:1.2;margin-bottom:8px;color:var(--ink);word-break:break-word;
   }
-  .skill-card p{
-    font-size:13.5px;color:var(--muted);
-    line-height:1.55;margin-bottom:22px;min-height:42px;
-  }
-  .skill-tags{
-    display:flex;flex-wrap:wrap;gap:6px;
-    padding-top:18px;
-    border-top:1px solid rgba(10,10,10,.08);
-  }
+  @media (max-width:520px){ .skill-card h3{font-size:17px} }
+  .skill-card p{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:18px;min-height:40px;}
+  @media (max-width:520px){ .skill-card p{font-size:12px;min-height:36px} }
+  .skill-tags{display:flex;flex-wrap:wrap;gap:5px;padding-top:16px;border-top:1px solid rgba(10,10,10,.08);}
   .skill-tag{
-    font-family:var(--mono);font-size:10.5px;
-    padding:4px 10px;border-radius:100px;
+    font-family:var(--mono);font-size:10px;
+    padding:3px 9px;border-radius:100px;
     background:rgba(255,255,255,.4);
     border:1px solid rgba(255,255,255,.6);
     color:var(--ink-2);
-    letter-spacing:.01em;
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   }
 
   .marquee-hint{
@@ -413,23 +349,18 @@
     color:var(--dim);letter-spacing:.08em;text-transform:uppercase;
     margin-top:20px;display:flex;align-items:center;gap:10px;
   }
-  .marquee-hint::before{
-    content:"";width:20px;height:1px;
-    background:var(--dim);opacity:.5;
-  }
+  @media (max-width:480px){ .marquee-hint{font-size:10px;margin-top:16px} }
+  .marquee-hint::before{content:"";width:20px;height:1px;background:var(--dim);opacity:.5;}
 
-  /* ============================================================
-     INTERESTS — same palette, glass cards
-     ============================================================ */
+  /* ---------- Interests ---------- */
   .interests-grid{
-    display:grid;
-    grid-template-columns:repeat(6,1fr);
-    gap:16px;
+    display:grid;grid-template-columns:repeat(6,1fr);gap:16px;
   }
+  @media (max-width:1000px){ .interests-grid{grid-template-columns:repeat(4,1fr)} }
+  @media (max-width:640px){ .interests-grid{grid-template-columns:1fr} }
+
   .interest{
-    grid-column:span 2;
-    padding:28px;
-    border-radius:22px;
+    grid-column:span 2;padding:26px;border-radius:22px;
     background:rgba(255,255,255,.14);
     backdrop-filter:blur(22px) saturate(180%);
     -webkit-backdrop-filter:blur(22px) saturate(180%);
@@ -438,24 +369,14 @@
       0 1px 0 rgba(255,255,255,.7) inset,
       0 -1px 0 rgba(0,0,0,.05) inset,
       0 16px 40px -20px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
+    position:relative;overflow:hidden;isolation:isolate;
     transition:transform .4s var(--ease-out), border-color .3s var(--ease), box-shadow .4s var(--ease-out);
-    will-change:transform;
   }
+  @media (max-width:640px){ .interest{padding:22px} }
+  @media (max-width:380px){ .interest{padding:18px} }
   .interest::before{
     content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);
-    z-index:1;
-  }
-  .interest::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
+    background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 35%);z-index:1;
   }
   .interest > *{position:relative;z-index:4}
   .interest:hover{
@@ -466,62 +387,41 @@
       0 -1px 0 rgba(0,0,0,.05) inset,
       0 24px 50px -20px rgba(10,20,40,.30);
   }
-
   .interest-tag{
     font-family:var(--mono);font-size:10.5px;
     color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
-    margin-bottom:16px;
-    display:flex;align-items:center;gap:8px;
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;
   }
   .interest-tag::before{
     content:"";width:5px;height:5px;border-radius:50%;
-    background:var(--blue);
-    box-shadow:0 0 8px rgba(37,99,235,.6);
+    background:var(--blue);box-shadow:0 0 8px rgba(37,99,235,.6);flex-shrink:0;
   }
   .interest h3{
-    font-size:18px;font-weight:600;
-    letter-spacing:-.02em;line-height:1.25;
-    margin-bottom:10px;color:var(--ink);
+    font-size:17px;font-weight:600;letter-spacing:-.02em;
+    line-height:1.25;margin-bottom:8px;color:var(--ink);word-break:break-word;
   }
-  .interest p{
-    font-size:13.5px;line-height:1.55;
-    color:var(--muted);
-  }
-  .interest .chips{
-    display:flex;flex-wrap:wrap;gap:5px;margin-top:18px;
-  }
+  @media (max-width:480px){ .interest h3{font-size:16px} }
+  .interest p{font-size:13px;line-height:1.5;color:var(--muted);}
+  .interest .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:16px;}
   .interest .chip{
-    font-family:var(--mono);font-size:10.5px;
-    padding:3px 9px;border-radius:100px;
+    font-family:var(--mono);font-size:10px;
+    padding:3px 8px;border-radius:100px;
     background:rgba(255,255,255,.4);
     border:1px solid rgba(255,255,255,.6);
     color:var(--ink-2);
-    backdrop-filter:blur(8px);
-    -webkit-backdrop-filter:blur(8px);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   }
-
   .interest.wide{grid-column:span 4}
+  @media (max-width:1000px){ .interest.wide{grid-column:span 4} }
+  @media (max-width:640px){ .interest, .interest.wide{grid-column:span 1} }
 
-  @media (max-width:1000px){
-    .interests-grid{grid-template-columns:repeat(4,1fr)}
-    .interest{grid-column:span 2}
-    .interest.wide{grid-column:span 4}
-  }
-  @media (max-width:640px){
-    .interests-grid{grid-template-columns:1fr}
-    .interest, .interest.wide{grid-column:span 1}
-  }
+  /* ---------- Contact ---------- */
+  .contact{padding:100px 0;border-top:1px solid var(--line);}
+  @media (max-width:720px){ .contact{padding:64px 0} }
+  @media (max-width:480px){ .contact{padding:52px 0} }
 
-  /* ============================================================
-     CONTACT
-     ============================================================ */
-  .contact{
-    padding:120px 0;
-    border-top:1px solid var(--line);
-  }
   .contact-card{
-    padding:64px 56px;
-    border-radius:28px;
+    padding:56px 48px;border-radius:28px;
     background:rgba(255,255,255,.18);
     backdrop-filter:blur(28px) saturate(180%);
     -webkit-backdrop-filter:blur(28px) saturate(180%);
@@ -530,58 +430,45 @@
       0 1px 0 rgba(255,255,255,.75) inset,
       0 -1px 0 rgba(0,0,0,.04) inset,
       0 24px 60px -24px rgba(10,20,40,.22);
-    position:relative;
-    overflow:hidden;
-    isolation:isolate;
+    position:relative;overflow:hidden;isolation:isolate;
   }
+  @media (max-width:720px){ .contact-card{padding:40px 28px} }
+  @media (max-width:480px){ .contact-card{padding:32px 20px} }
   .contact-card::before{
     content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 35%);
-    z-index:1;
-  }
-  .contact-card::after{
-    content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
-    padding:1px;
-    background:linear-gradient(135deg,rgba(255,255,255,.95),transparent 35%,rgba(255,255,255,.5));
-    -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
-    -webkit-mask-composite:xor;mask-composite:exclude;
-    z-index:3;
+    background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 35%);z-index:1;
   }
   .contact-card > *{position:relative;z-index:4}
-
   .contact-card h2{
-    font-size:clamp(2rem,4.4vw,3rem);
+    font-size:clamp(1.8rem,4.4vw,3rem);
     font-weight:600;letter-spacing:-.04em;
-    line-height:1.08;margin-bottom:22px;max-width:640px;
+    line-height:1.08;margin-bottom:18px;max-width:640px;word-break:break-word;
   }
-  .contact-card p{
-    font-size:16px;color:var(--muted);
-    max-width:520px;margin-bottom:36px;line-height:1.6;
-  }
+  @media (max-width:480px){ .contact-card h2{font-size:1.6rem;letter-spacing:-.03em} }
+  .contact-card p{font-size:15px;color:var(--muted);max-width:520px;margin-bottom:32px;line-height:1.6;}
+  @media (max-width:480px){ .contact-card p{font-size:14px;margin-bottom:26px} }
   .contact-links{display:flex;gap:12px;flex-wrap:wrap}
-  @media (max-width:640px){ .contact-card{padding:44px 26px} }
+  @media (max-width:480px){ .contact-links{gap:10px} }
 
-  /* ============================================================
-     FOOTER
-     ============================================================ */
-  footer{border-top:1px solid var(--line);padding:40px 0}
+  /* ---------- Footer ---------- */
+  footer{border-top:1px solid var(--line);padding:32px 0;}
+  @media (max-width:480px){ footer{padding:24px 0} }
   .footer-inner{
     display:flex;justify-content:space-between;align-items:center;
-    gap:24px;flex-wrap:wrap;
+    gap:16px;flex-wrap:wrap;
     font-family:var(--mono);font-size:11.5px;
     color:var(--dim);letter-spacing:.04em;
   }
-  .footer-inner .links{display:flex;gap:24px}
+  @media (max-width:480px){ .footer-inner{font-size:10.5px;gap:12px;justify-content:center;text-align:center} }
+  .footer-inner .links{display:flex;gap:20px}
+  @media (max-width:480px){ .footer-inner .links{gap:16px} }
   .footer-inner a{transition:color .2s var(--ease)}
   .footer-inner a:hover{color:var(--ink)}
 
-  /* ============================================================
-     REVEAL
-     ============================================================ */
+  /* ---------- Reveal ---------- */
   .reveal{
     opacity:0;transform:translateY(14px);
     transition:opacity .7s var(--ease-out), transform .7s var(--ease-out);
-    will-change:opacity, transform;
   }
   .reveal.in{opacity:1;transform:translateY(0)}
   .reveal.d1{transition-delay:.05s}
@@ -602,18 +489,13 @@
 </head>
 <body>
 
-<!-- Ambient backdrop — this is what the glass refracts -->
 <div class="backdrop"></div>
 <div class="grain"></div>
-
-<!-- All content is rendered by the script below -->
 <div class="shell" id="shell"></div>
 
 <script>
 /* =====================================================================
-   SEED DOCUMENT
-   Matches your current copy so the site looks identical on first load
-   before anything is saved from the admin console.
+   SEED — used only if API returns nothing
    ===================================================================== */
 const DEFAULT_DOC = {
   meta: {
@@ -640,10 +522,7 @@ const DEFAULT_DOC = {
     secondaryBtnLabel: "Email",
     secondaryBtnLink: "mailto:Vinaycharyvelpula@gmail.com"
   },
-  photo: {
-    url: "me.png",
-    alt: "Vinay V"
-  },
+  photo: { url: "me.png", alt: "Vinay V" },
   skills: {
     label: "(01) — Skills",
     title: "A working toolkit, refined over years.",
@@ -695,6 +574,11 @@ const DEFAULT_DOC = {
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr = a => Array.isArray(a) ? a : [];
 
+/* Filter out empty DB entries — {label:"", href:""} etc */
+const cleanItems = (items, keys) => arr(items).filter(it =>
+  it && keys.every(k => it[k] && String(it[k]).trim() !== '')
+);
+
 function deepMerge(base, src){
   if(Array.isArray(base)) return Array.isArray(src) ? src : base;
   if(base && typeof base === 'object'){
@@ -706,7 +590,7 @@ function deepMerge(base, src){
 }
 
 /* =====================================================================
-   RENDER — the entire page is built from `state`
+   RENDER
    ===================================================================== */
 let state = {};
 
@@ -719,7 +603,6 @@ function render(){
   const contact = state.contact || {};
   const footer = state.footer || {};
 
-  // Page title + meta
   if(state.meta?.title) document.title = state.meta.title;
   if(state.meta?.description){
     let m = document.querySelector('meta[name="description"]');
@@ -778,10 +661,11 @@ function render(){
   `;
 
   // ---------- SKILLS ----------
-  const skillCards = arr(skills.items).map(it => `
+  const skillItems = cleanItems(skills.items, ['title']);
+  const skillCards = skillItems.map(it => `
     <article class="skill-card">
       ${it.num ? `<div class="skill-num">${esc(it.num)}</div>` : ''}
-      ${it.title ? `<h3>${esc(it.title)}</h3>` : ''}
+      <h3>${esc(it.title)}</h3>
       ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
       ${arr(it.tags).length ? `
         <div class="skill-tags">
@@ -813,13 +697,14 @@ function render(){
   `;
 
   // ---------- INTERESTS ----------
-  const interestCards = arr(interests.items).map((it, i) => {
+  const interestItems = cleanItems(interests.items, ['title']);
+  const interestCards = interestItems.map((it, i) => {
     const wide = String(it.wide || '').toLowerCase() === 'yes';
     const delayCls = ['d1','d2','d3'][i % 3];
     return `
       <article class="interest${wide ? ' wide' : ''} reveal ${delayCls}">
         ${it.tag ? `<div class="interest-tag">${esc(it.tag)}</div>` : ''}
-        ${it.title ? `<h3>${esc(it.title)}</h3>` : ''}
+        <h3>${esc(it.title)}</h3>
         ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
         ${arr(it.chips).length ? `
           <div class="chips">
@@ -845,18 +730,20 @@ function render(){
   `;
 
   // ---------- CONTACT ----------
-  const contactButtons = arr(contact.items).map(it => {
+  const contactItems = cleanItems(contact.items, ['label', 'href']);
+  const contactButtons = contactItems.map(it => {
     const isPrimary = String(it.primary || '').toLowerCase() === 'yes';
     const cls = isPrimary ? 'btn btn-primary' : 'btn btn-glass';
     const arrow = isPrimary ? ' <span class="arrow">→</span>' : '';
-    return `<a href="${esc(it.href || '#')}"${it.href && it.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''} class="${cls}">${esc(it.label || '')}${arrow}</a>`;
+    const ext = it.href.startsWith('http') ? ' target="_blank" rel="noopener"' : '';
+    return `<a href="${esc(it.href)}"${ext} class="${cls}">${esc(it.label)}${arrow}</a>`;
   }).join('');
 
   const contactHTML = `
     <section class="contact" id="contact">
       <div class="wrap">
         <div class="contact-card reveal">
-          ${contact.label ? `<div class="section-label" style="margin-bottom:20px">${esc(contact.label)}</div>` : ''}
+          ${contact.label ? `<div class="section-label" style="margin-bottom:18px">${esc(contact.label)}</div>` : ''}
           ${contact.title ? `<h2>${esc(contact.title)}</h2>` : ''}
           ${contact.desc ? `<p>${esc(contact.desc)}</p>` : ''}
           ${contactButtons ? `<div class="contact-links">${contactButtons}</div>` : ''}
@@ -866,8 +753,9 @@ function render(){
   `;
 
   // ---------- FOOTER ----------
-  const footerLinks = arr(footer.items).map(it => 
-    `<a href="${esc(it.href || '#')}"${it.href && it.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(it.label || '')}</a>`
+  const footerItems = cleanItems(footer.items, ['label', 'href']);
+  const footerLinks = footerItems.map(it =>
+    `<a href="${esc(it.href)}"${it.href.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${esc(it.label)}</a>`
   ).join('');
 
   const footerHTML = `
@@ -887,10 +775,10 @@ function render(){
   const customSections = Object.entries(state)
     .filter(([k, v]) => !builtinKeys.includes(k) && v && typeof v === 'object' && Array.isArray(v.items))
     .map(([k, v]) => {
-      const cards = arr(v.items).map(it => `
+      const cards = cleanItems(v.items, ['title']).map(it => `
         <article class="interest reveal d1">
           ${it.icon ? `<div class="interest-tag">${esc(it.icon)}</div>` : ''}
-          ${it.title ? `<h3>${esc(it.title)}</h3>` : ''}
+          <h3>${esc(it.title)}</h3>
           ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
         </article>
       `).join('');
@@ -910,7 +798,6 @@ function render(){
       `;
     }).join('');
 
-  // ---------- ASSEMBLE ----------
   document.getElementById('shell').innerHTML = `
     ${navHTML}
     ${heroHTML}
@@ -925,12 +812,11 @@ function render(){
 }
 
 /* =====================================================================
-   POST-RENDER — marquee clone, image fade, clock, reveal observer
+   POST-RENDER
    ===================================================================== */
 let io = null;
 
 function afterRender(){
-  // Marquee — duplicate cards so translate -50% loops seamlessly
   const m = document.getElementById('marquee');
   if(m){
     const originals = Array.from(m.children);
@@ -941,7 +827,6 @@ function afterRender(){
     });
   }
 
-  // Image fade
   document.querySelectorAll('img.autoload').forEach(img => {
     if(img.complete && img.naturalWidth > 0) img.classList.add('loaded');
     else {
@@ -950,10 +835,8 @@ function afterRender(){
     }
   });
 
-  // Clock
   updateClock();
 
-  // Reveal observer — disconnect the old one if any
   if(io) io.disconnect();
   io = new IntersectionObserver(entries => {
     for(const e of entries){
@@ -975,27 +858,67 @@ function updateClock(){
 }
 
 /* =====================================================================
-   LOAD — first paint uses seed; then fetch real data from /api/data
+   LOAD — no more silent failures
    ===================================================================== */
 async function load(){
   let remote = null;
-  try{
-    const r = await fetch('/api/data', {cache:'no-store'});
-    if(r.ok){
+
+  // Try relative path first (works when HTML is served from same origin as the API).
+  // Fall back to absolute URL if relative fails.
+  const urls = ['/api/data', 'https://www.vinayvelpula.in/api/data'];
+
+  for(const url of urls){
+    try{
+      console.log('[load] fetching', url);
+      const r = await fetch(url, {
+        cache: 'no-store',
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
+
+      console.log('[load] status:', r.status, r.headers.get('content-type'));
+
+      if(!r.ok){
+        console.warn('[load] non-OK — skipping', url);
+        continue;
+      }
+
+      const ct = r.headers.get('content-type') || '';
+      if(!ct.includes('application/json')){
+        const preview = await r.text();
+        console.warn('[load] expected JSON, got:', ct, '| preview:', preview.slice(0, 200));
+        continue;
+      }
+
       const j = await r.json();
-      if(j && typeof j === 'object' && Object.keys(j).length > 0) remote = j;
+      console.log('[load] parsed keys:', Object.keys(j || {}));
+
+      if(j && typeof j === 'object' && !Array.isArray(j) && Object.keys(j).length > 0){
+        remote = j;
+        console.log('[load] ✅ using remote data from', url);
+        break;
+      } else {
+        console.warn('[load] empty object from', url);
+      }
+    }catch(e){
+      console.error('[load] fetch failed for', url, e);
     }
-  }catch(e){}
+  }
+
+  if(!remote){
+    console.warn('[load] ❌ no remote data — using DEFAULT_DOC');
+  } else {
+    console.log('[load] ✅ remote data loaded');
+  }
 
   state = remote ? deepMerge(structuredClone(DEFAULT_DOC), remote) : structuredClone(DEFAULT_DOC);
   render();
 
-  // Tell admin (if this page is inside its preview iframe) that we're ready
   try{ window.parent?.postMessage({type:'PORTFOLIO_READY'}, '*'); }catch(e){}
 }
 
 /* =====================================================================
-   LIVE PREVIEW SYNC — admin sends PORTFOLIO_UPDATE with the new state
+   Live preview sync (admin → iframe)
    ===================================================================== */
 window.addEventListener('message', e => {
   if(e.data && e.data.type === 'PORTFOLIO_UPDATE' && e.data.data){
