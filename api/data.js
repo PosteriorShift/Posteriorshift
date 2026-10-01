@@ -6,7 +6,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
 const ADMIN_USER = process.env.ADMIN_USER;
 const ADMIN_PASS = process.env.ADMIN_PASS;
 const COOKIE = 'vv_session';
-const SESSION_SECONDS = 15 * 60;
+
+// Cookie kept for ~10 years — effectively "forever".
+// The JWT itself has NO exp claim, so it never expires until JWT_SECRET rotates.
+const COOKIE_MAX_AGE = 60 * 60 * 24 * 365 * 10;
 
 function parseCookies(req){
   const raw = req.headers.cookie || '';
@@ -17,18 +20,21 @@ function parseCookies(req){
     }).filter(([k])=>k)
   );
 }
-function setCookie(res, name, value, maxAge){
+
+function setCookie(res, name, value, maxAge = COOKIE_MAX_AGE){
   res.setHeader('Set-Cookie', [
     `${name}=${encodeURIComponent(value)}`,
     'Path=/', 'HttpOnly', 'SameSite=Lax', 'Secure',
     `Max-Age=${maxAge}`
   ].join('; '));
 }
+
 function auth(req){
   const token = parseCookies(req)[COOKIE];
   if(!token) return null;
   try { return jwt.verify(token, JWT_SECRET); } catch { return null; }
 }
+
 function readBody(req){
   return new Promise((resolve,reject)=>{
     let d='';
@@ -41,7 +47,6 @@ function readBody(req){
 export default async function handler(req, res){
   // ---------- CORS ----------
   const origin = req.headers.origin || '';
-  // Allow same-origin + your domain + localhost for dev
   const allowed = [
     'https://www.vinayvelpula.in',
     'https://vinayvelpula.in',
@@ -66,7 +71,6 @@ export default async function handler(req, res){
       const rows = await sql`select doc from pages where id='home'`;
       const doc = rows[0]?.doc;
       if(!doc){
-        // Return 200 with empty object — client falls back to defaults
         return res.status(200).json({});
       }
       return res.status(200).json(doc);
@@ -89,9 +93,10 @@ export default async function handler(req, res){
         await new Promise(r=>setTimeout(r,400));
         return res.status(401).json({error:'invalid_credentials'});
       }
-      const token = jwt.sign({u:username}, JWT_SECRET, {expiresIn: SESSION_SECONDS});
-      setCookie(res, COOKIE, token, SESSION_SECONDS);
-      return res.status(200).json({ok:true, expiresIn:SESSION_SECONDS});
+      // NO expiresIn — the token never expires.
+      const token = jwt.sign({u: username}, JWT_SECRET);
+      setCookie(res, COOKIE, token);
+      return res.status(200).json({ok:true});
     }catch(e){ return res.status(500).json({error:'server_error'}); }
   }
 
@@ -120,3 +125,6 @@ export default async function handler(req, res){
 
   return res.status(405).json({error:'method_not_allowed'});
 }
+
+// Allow large payloads (for base64 images)
+export const config = { api: { bodyParser: { sizeLimit: '15mb' } } };
