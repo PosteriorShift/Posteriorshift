@@ -39,24 +39,49 @@ function readBody(req){
 }
 
 export default async function handler(req, res){
+  // ---------- CORS ----------
+  const origin = req.headers.origin || '';
+  // Allow same-origin + your domain + localhost for dev
+  const allowed = [
+    'https://www.vinayvelpula.in',
+    'https://vinayvelpula.in',
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ];
+  if(allowed.includes(origin)){
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+  }
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if(req.method === 'OPTIONS') return res.status(204).end();
+
   res.setHeader('Cache-Control','no-store');
   const action = (req.query.action||'').toString();
 
-  // public read of the whole document
+  // ---------- public read ----------
   if(req.method==='GET' && !action){
     try{
       const rows = await sql`select doc from pages where id='home'`;
-      return res.status(200).json(rows[0]?.doc || {});
-    }catch(e){ return res.status(500).json({error:'db_error',detail:String(e.message)}); }
+      const doc = rows[0]?.doc;
+      if(!doc){
+        // Return 200 with empty object — client falls back to defaults
+        return res.status(200).json({});
+      }
+      return res.status(200).json(doc);
+    }catch(e){
+      return res.status(500).json({error:'db_error',detail:String(e.message)});
+    }
   }
 
-  // who am I?
+  // ---------- who am I ----------
   if(req.method==='GET' && action==='me'){
     const u = auth(req);
     return res.status(200).json({authed: !!u, user: u?.u || null});
   }
 
-  // login
+  // ---------- login ----------
   if(req.method==='POST' && action==='login'){
     try{
       const { username, password } = await readBody(req);
@@ -70,13 +95,13 @@ export default async function handler(req, res){
     }catch(e){ return res.status(500).json({error:'server_error'}); }
   }
 
-  // logout
+  // ---------- logout ----------
   if(req.method==='POST' && action==='logout'){
     setCookie(res, COOKIE, '', 0);
     return res.status(200).json({ok:true});
   }
 
-  // save — replace entire document
+  // ---------- save ----------
   if(req.method==='POST' && action==='save'){
     if(!auth(req)) return res.status(401).json({error:'unauthorized'});
     try{
