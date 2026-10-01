@@ -576,6 +576,18 @@
 <div class="backdrop"></div>
 <div class="grain"></div>
 <div class="shell" id="shell"></div>
+  <!-- Work-in-progress notice (shown once per browser session) -->
+<div class="wip-overlay" id="wipOverlay" role="dialog" aria-modal="true" aria-labelledby="wipTitle">
+  <div class="wip-card">
+    <button class="wip-close" id="wipClose" aria-label="Close">✕</button>
+    <div class="wip-badge">Work in progress</div>
+    <h2 id="wipTitle">Site is still being built</h2>
+    <p>I'm actively updating this site and still learning. Some things may change or look unfinished — I'll keep improving it.</p>
+    <div class="wip-actions">
+      <button class="btn btn-primary" id="wipDismiss">Got it</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* =====================================================================
@@ -651,6 +663,7 @@ const DEFAULT_DOC = {
     ]
   }
 };
+  
 
 /* =====================================================================
    HELPERS
@@ -1056,16 +1069,6 @@ setInterval(updateClock, 30000);
 })();
 </script>
   <!-- Work-in-progress notice (shown once per browser session) -->
-<div class="wip-overlay" id="wipOverlay" role="dialog" aria-modal="true" aria-labelledby="wipTitle">
-  <div class="wip-card">
-    <button class="wip-close" id="wipClose" aria-label="Close">✕</button>
-    <div class="wip-badge">Work in progress</div>
-    <h2 id="wipTitle">Site is still being built</h2>
-    <p>I'm actively updating this site and still learning. Some things may change or look unfinished — I'll keep improving it.</p>
-    <div class="wip-actions">
-      <button class="btn btn-primary" id="wipDismiss">Got it</button>
-    </div>
-  </div>
-</div>
+
 </body>
 </html>
